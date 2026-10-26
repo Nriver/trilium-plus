@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
-nvm use 24.22.1
+NODE_VERSION="${NODE_VERSION:-24.22.1}"
+export NODE_VERSION
+
+if [ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]; then
+    # shellcheck disable=SC1090
+    . "${NVM_DIR:-$HOME/.nvm}/nvm.sh"
+    nvm use "$NODE_VERSION"
+fi
+
 echo "Node version:"
 node -v
 

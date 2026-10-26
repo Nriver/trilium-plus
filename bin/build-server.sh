@@ -1,44 +1,57 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
 
 PKG_DIR=dist/trilium-linux-x64-server
-NODE_VERSION=24.22.1
+NODE_VERSION="${NODE_VERSION:-24.22.1}"
+export NODE_VERSION
 
-if [ "$1" != "DONTCOPY" ]
+if [ "${1:-}" != "DONTCOPY" ]
 then
-    ./bin/copy-trilium.sh $PKG_DIR
+    ./bin/copy-trilium.sh "$PKG_DIR"
 fi
+
+mkdir -p dist
 
 cd dist
 
+NODE_TARBALL="node-v${NODE_VERSION}-linux-x64.tar.xz"
+NODE_URL="https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TARBALL}"
+
+echo "Downloading Node.js v${NODE_VERSION}..."
 if command -v proxychains &>/dev/null; then
-    proxychains wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz
+    proxychains wget -O "$NODE_TARBALL" "$NODE_URL" || wget -O "$NODE_TARBALL" "$NODE_URL"
 else
-    wget https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz
+    wget -O "$NODE_TARBALL" "$NODE_URL"
 fi
 
-tar xfJ node-v${NODE_VERSION}-linux-x64.tar.xz
-rm node-v${NODE_VERSION}-linux-x64.tar.xz
+tar xfJ "$NODE_TARBALL"
+rm "$NODE_TARBALL"
 cd ..
 
-mv dist/node-v${NODE_VERSION}-linux-x64 $PKG_DIR/node
+rm -rf "$PKG_DIR/node"
+mv "dist/node-v${NODE_VERSION}-linux-x64" "$PKG_DIR/node"
 
-rm -r $PKG_DIR/node/lib/node_modules/npm
-rm -r $PKG_DIR/node/include/node
+rm -rf "$PKG_DIR/node/lib/node_modules/npm"
+rm -rf "$PKG_DIR/node/include/node"
 
-rm -r $PKG_DIR/node_modules/electron*
-rm -r $PKG_DIR/webpack*
-rm -r $PKG_DIR/electron.js
+rm -rf "$PKG_DIR"/node_modules/electron*
+rm -rf "$PKG_DIR"/webpack*
+rm -f "$PKG_DIR/electron.js"
 
-printf "#!/bin/sh\n./node/bin/node src/www" > $PKG_DIR/trilium.sh
-chmod 755 $PKG_DIR/trilium.sh
+printf "#!/bin/sh\n./node/bin/node src/www" > "$PKG_DIR/trilium.sh"
+chmod 755 "$PKG_DIR/trilium.sh"
 
-cp bin/tpl/anonymize-database.sql $PKG_DIR/
+cp bin/tpl/anonymize-database.sql "$PKG_DIR"/
 
-cp -r dump-db $PKG_DIR/
-rm -rf $PKG_DIR/dump-db/node_modules
+cp -r dump-db "$PKG_DIR/"
+rm -rf "$PKG_DIR/dump-db/node_modules"
 
-VERSION=`jq -r ".version" package.json`
+VERSION=$(jq -r ".version" package.json)
 
 cd dist
 
-tar cJf trilium-linux-x64-server-${VERSION}.tar.xz trilium-linux-x64-server
+tar cJf "trilium-linux-x64-server-${VERSION}.tar.xz" trilium-linux-x64-server
+
+echo "Created dist/trilium-linux-x64-server-${VERSION}.tar.xz"

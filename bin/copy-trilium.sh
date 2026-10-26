@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 
-node -v
+NODE_VERSION="${NODE_VERSION:-24.22.1}"
+
+if [ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]; then
+    # shellcheck disable=SC1090
+    . "${NVM_DIR:-$HOME/.nvm}/nvm.sh"
+    nvm use "$NODE_VERSION" > /dev/null
+fi
+
+if [ "$(node -p 'process.versions.node' 2>/dev/null)" != "$NODE_VERSION" ]; then
+    echo "Node.js v$NODE_VERSION is required, but $(node -v 2>/dev/null || echo 'node is not installed') is active." >&2
+    echo "Please run 'nvm use $NODE_VERSION' or adjust PATH." >&2
+    exit 1
+fi
+
+echo "Node version: $(node -v)"
 
 if [[ $# -eq 0 ]] ; then
     echo "Missing argument of target directory"
@@ -26,10 +40,14 @@ done
 for f in 'package.json' 'package-lock.json' 'README.md' 'LICENSE' 'config-sample.ini' 'electron.js'; do
     cp "$f" "$DIR"/
 done
-cp webpack-* "$DIR"/      # here warning because there is no 'webpack-*', but webpack.config.js only
+for f in webpack-*; do
+    if [ -e "$f" ]; then
+        cp "$f" "$DIR"/
+    fi
+done
 
 # run in subshell (so we return to original dir)
-(cd $DIR && nvm use 24.22.1 && npm install --only=prod)
+(cd "$DIR" && npm install --omit=dev --no-audit --no-fund)
 
 if [[ -d "$DIR"/node_modules ]]; then
 # cleanup of useless files in dependencies
@@ -38,9 +56,7 @@ if [[ -d "$DIR"/node_modules ]]; then
     done
 
 # delete all tests (there are often large images as test file for jimp etc.)
-    for d in 'test' 'docs' 'demo'; do
-        find "$DIR"/node_modules -name "$d" -exec rm -rf {} \;
-    done
+    find "$DIR"/node_modules -type d \( -name test -o -name docs -o -name demo \) -prune -exec rm -rf {} +
 fi
 
 find $DIR/libraries -name "*.map" -type f -delete
