@@ -37,6 +37,10 @@ app.use(`/robots.txt`, express.static(path.join(__dirname, 'public/robots.txt'))
 app.use(sessionParser);
 app.use(favicon(`${__dirname}/../images/app-icons/win/icon.ico`));
 
+app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
+    res.status(204).end();
+});
+
 require('./routes/assets.js').register(app);
 require('./routes/routes.js').register(app);
 require('./routes/custom.js').register(app);

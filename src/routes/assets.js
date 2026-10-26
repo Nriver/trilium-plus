@@ -15,6 +15,12 @@ const persistentCacheStatic = (root, options) => {
 
 function register(app) {
     const srcRoot = path.join(__dirname, '..');
+
+    app.get('/sw.js', (req, res) => {
+        res.setHeader('Content-Type', 'application/javascript');
+        res.setHeader('Service-Worker-Allowed', '/');
+        res.status(200).send('// Service worker disabled\n');
+    });
     app.use(`/${assetPath}/app`, persistentCacheStatic(path.join(srcRoot, 'public/app')));
     app.use(`/${assetPath}/app-dist`, persistentCacheStatic(path.join(srcRoot, 'public/app-dist')));
     app.use(`/${assetPath}/fonts`, persistentCacheStatic(path.join(srcRoot, 'public/fonts')));
