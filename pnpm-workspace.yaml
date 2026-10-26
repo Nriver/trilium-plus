@@ -1,0 +1,6 @@
+allowBuilds:
+  better-sqlite3: true
+  electron: true
+  electron-winstaller: true
+  lzma-native: true
+  print-this: true

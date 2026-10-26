@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-nvm use 24.14.1
+nvm use 24.22.1
 echo "Node version:"
 node -v
 
