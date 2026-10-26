@@ -41,7 +41,7 @@
     "@excalidraw/excalidraw": "0.18.0",
     "archiver": "6.0.2",
     "async-mutex": "0.5.0",
-    "axios": "1.13.3",
+    "axios": "1.20.0",
     "better-sqlite3": "13.0.3",
     "boxicons": "2.1.4",
     "chokidar": "3.6.0",
