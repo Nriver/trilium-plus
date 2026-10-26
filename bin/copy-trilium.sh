@@ -57,6 +57,16 @@ if [[ -d "$DIR"/node_modules ]]; then
 
 # delete all tests (there are often large images as test file for jimp etc.)
     find "$DIR"/node_modules -type d \( -name test -o -name docs -o -name demo \) -prune -exec rm -rf {} +
+
+    rm -rf "$DIR"/node_modules/@excalidraw/excalidraw/dist/dev \
+        "$DIR"/node_modules/@excalidraw/excalidraw/dist/types \
+        "$DIR"/node_modules/@excalidraw/mermaid-to-excalidraw/node_modules
+
+    if [ -d "$DIR"/node_modules/mermaid/dist ]; then
+        find "$DIR"/node_modules/mermaid/dist -mindepth 1 -maxdepth 1 ! -name 'mermaid.min.js' -exec rm -rf {} +
+    fi
+
+    find "$DIR"/node_modules -type f -name '*.map' -delete
 fi
 
 find $DIR/libraries -name "*.map" -type f -delete
