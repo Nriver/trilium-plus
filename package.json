@@ -58,7 +58,7 @@
     "escape-html": "1.0.3",
     "express": "4.22.1",
     "express-partial-content": "1.0.2",
-    "express-rate-limit": "8.2.1",
+    "express-rate-limit": "8.7.1",
     "express-session": "1.19.0",
     "force-graph": "1.51.0",
     "fs-extra": "11.3.3",
