@@ -7,10 +7,6 @@ then
     ./bin/copy-trilium.sh $SRC_DIR
 fi
 
-echo "Copying required mac binaries"
-
-cp -r bin/better-sqlite3/mac-better_sqlite3.node $SRC_DIR/node_modules/better-sqlite3/build/Release/better_sqlite3.node
-
 rm -r $SRC_DIR/src/public/app-dist/*.mobile.*
 
 echo "Packaging mac x64 electron build"
