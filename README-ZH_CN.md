@@ -64,10 +64,10 @@ pnpm run start-server
 如果你觉得我做的对你有帮助, 欢迎捐赠, 这对我来说是莫大的鼓励!
 
 支付宝:  
-![Alipay](docs/alipay.png)
+<img width="195" height="193" alt="alipay" src="https://github.com/user-attachments/assets/6e496149-f229-4394-bfc3-1d3785f0cb4f" />
 
 微信:  
-![Wechat Pay](docs/wechat_pay.png)
+<img width="192" height="193" alt="wechat_pay" src="https://github.com/user-attachments/assets/57e40834-9f2e-4f3a-846f-bd55f7c31723" />
 
 Ko-fi:  
 [![Support Me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/nriver)
