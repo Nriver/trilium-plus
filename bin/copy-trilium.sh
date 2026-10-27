@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 NODE_VERSION="${NODE_VERSION:-24.22.1}"
 
@@ -16,6 +17,14 @@ fi
 
 echo "Node version: $(node -v)"
 
+require_file() {
+    if [[ ! -s "$1" ]]; then
+        echo "ERROR: Missing required build artifact: $1" >&2
+        echo "The packaged application would be incomplete. Run 'npm install' and 'npm run webpack', then try again." >&2
+        exit 1
+    fi
+}
+
 if [[ $# -eq 0 ]] ; then
     echo "Missing argument of target directory"
     exit 1
@@ -26,6 +35,10 @@ if ! [[ $(which npm) ]]; then
 fi
 
 npm run webpack
+
+require_file "src/public/app-dist/desktop.js"
+require_file "src/public/app-dist/excalidraw.js"
+require_file "node_modules/@excalidraw/excalidraw/dist/prod/index.css"
 
 DIR="$1"
 
@@ -52,7 +65,9 @@ done
 if [[ -d "$DIR"/node_modules ]]; then
 # cleanup of useless files in dependencies
     for d in 'image-q/demo' 'better-sqlite3/Release' 'better-sqlite3/deps/sqlite3.tar.gz' '@jimp/plugin-print/fonts' 'jimp/browser' 'jimp/fonts'; do
-        [[ -e "$DIR"/node_modules/"$d" ]] && rm -rv "$DIR"/node_modules/"$d"
+        if [[ -e "$DIR"/node_modules/"$d" ]]; then
+            rm -rv "$DIR"/node_modules/"$d"
+        fi
     done
 
 # delete all tests (there are often large images as test file for jimp etc.)
@@ -69,7 +84,11 @@ if [[ -d "$DIR"/node_modules ]]; then
     find "$DIR"/node_modules -type f -name '*.map' -delete
 fi
 
-find $DIR/libraries -name "*.map" -type f -delete
+require_file "$DIR/src/public/app-dist/excalidraw.js"
+require_file "$DIR/node_modules/@excalidraw/excalidraw/dist/prod/index.css"
+require_file "$DIR/node_modules/@excalidraw/excalidraw/dist/prod/fonts/Assistant/Assistant-Regular.woff2"
+
+find "$DIR"/libraries -name "*.map" -type f -delete
 
 d="$DIR"/src/public
 [[ -d "$d"/app-dist ]] || mkdir -pv "$d"/app-dist
