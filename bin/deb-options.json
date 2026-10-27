@@ -8,7 +8,7 @@
   "description": "Trilium Notes is a hierarchical note taking application with focus on building large personal knowledge bases.",
   "sections": "misc",
   "maintainer": "zadam.apps@gmail.com",
-  "homepage": "https://github.com/zadam/trilium",
+  "homepage": "https://github.com/nriver/trilium-plus",
   "bin": "trilium",
   "icon": "dist/trilium-linux-x64/icon.png",
   "categories": [ "Office" ]

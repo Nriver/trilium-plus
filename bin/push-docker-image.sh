@@ -8,9 +8,9 @@ fi
 VERSION=$1
 SERIES=${VERSION:0:4}-latest
 
-docker push zadam/trilium:$VERSION
-docker push zadam/trilium:$SERIES
+docker push nriver/trilium-plus:$VERSION
+docker push nriver/trilium-plus:$SERIES
 
-if [[ $1 != *"beta"* ]]; then
-  docker push zadam/trilium:latest
+if [[ $VERSION == $SERIES ]]; then
+  docker push nriver/trilium-plus:latest
 fi
