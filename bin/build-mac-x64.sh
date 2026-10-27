@@ -7,11 +7,13 @@ then
     ./bin/copy-trilium.sh $SRC_DIR
 fi
 
-rm -r $SRC_DIR/src/public/app-dist/*.mobile.*
+rm -f $SRC_DIR/src/public/app-dist/*.mobile.*
+
+ELECTRON_VERSION=$(jq -r ".devDependencies.electron" package.json)
 
 echo "Packaging mac x64 electron build"
 
-./node_modules/.bin/electron-packager $SRC_DIR --asar --out=dist --executable-name=trilium --platform=darwin --arch=x64 --overwrite --icon=images/app-icons/mac/icon.icns
+./node_modules/.bin/electron-packager $SRC_DIR --asar --out=dist --executable-name=trilium --platform=darwin --arch=x64 --overwrite --icon=images/app-icons/mac/icon.icns --electron-version="$ELECTRON_VERSION"
 
 BUILD_DIR=./dist/trilium-mac-x64
 rm -rf $BUILD_DIR

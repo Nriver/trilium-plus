@@ -62,6 +62,14 @@ done
 # run in subshell (so we return to original dir)
 (cd "$DIR" && npm install --omit=dev --no-audit --no-fund)
 
+node -e '
+const fs = require("fs");
+const packagePath = process.argv[1];
+const pkg = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+delete pkg.devDependencies;
+fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2) + "\n");
+' "$DIR/package.json"
+
 if [[ -d "$DIR"/node_modules ]]; then
 # cleanup of useless files in dependencies
     for d in 'image-q/demo' 'better-sqlite3/Release' 'better-sqlite3/deps/sqlite3.tar.gz' '@jimp/plugin-print/fonts' 'jimp/browser' 'jimp/fonts'; do
