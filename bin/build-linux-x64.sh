@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 SRC_DIR=./dist/trilium-linux-x64-src
 
-[ "$1" != "DONTCOPY" ] && ./bin/copy-trilium.sh "$SRC_DIR"
+[ "${1:-}" != "DONTCOPY" ] && ./bin/copy-trilium.sh "$SRC_DIR"
 
 rm -f "$SRC_DIR"/src/public/app-dist/*.mobile.*
+
+./bin/prune-better-sqlite3.sh "$SRC_DIR" linux-x64 linuxmusl-x64
 
 ELECTRON_VERSION=$(jq -r ".devDependencies.electron" package.json)
 

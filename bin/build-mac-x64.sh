@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 SRC_DIR=./dist/trilium-mac-x64-src
 
-if [ "$1" != "DONTCOPY" ]
+if [ "${1:-}" != "DONTCOPY" ]
 then
     ./bin/copy-trilium.sh $SRC_DIR
 fi
 
 rm -f $SRC_DIR/src/public/app-dist/*.mobile.*
+
+./bin/prune-better-sqlite3.sh "$SRC_DIR" darwin-x64
 
 ELECTRON_VERSION=$(jq -r ".devDependencies.electron" package.json)
 
@@ -32,5 +35,5 @@ VERSION=`jq -r ".version" package.json`
 
 cd dist
 
-rm trilium-mac-x64-${VERSION}.zip
+rm -f trilium-mac-x64-${VERSION}.zip
 zip -r9 --symlinks trilium-mac-x64-${VERSION}.zip trilium-mac-x64

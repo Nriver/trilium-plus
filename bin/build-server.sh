@@ -37,8 +37,13 @@ rm -rf "$PKG_DIR/node/lib/node_modules/npm"
 rm -rf "$PKG_DIR/node/include/node"
 
 rm -rf "$PKG_DIR"/node_modules/electron*
+rm -rf "$PKG_DIR"/node_modules/@electron/remote
+rm -rf "$PKG_DIR"/node_modules/@types
+rm -rf "$PKG_DIR"/node_modules/sass
 rm -rf "$PKG_DIR"/webpack*
 rm -f "$PKG_DIR/electron.js"
+
+./bin/prune-better-sqlite3.sh "$PKG_DIR" linux-x64 linuxmusl-x64
 
 printf "#!/bin/sh\n./node/bin/node src/www" > "$PKG_DIR/trilium.sh"
 chmod 755 "$PKG_DIR/trilium.sh"

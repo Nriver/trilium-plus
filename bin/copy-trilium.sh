@@ -72,14 +72,34 @@ fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2) + "\n");
 
 if [[ -d "$DIR"/node_modules ]]; then
 # cleanup of useless files in dependencies
-    for d in 'image-q/demo' 'better-sqlite3/Release' 'better-sqlite3/deps/sqlite3.tar.gz' '@jimp/plugin-print/fonts' 'jimp/browser' 'jimp/fonts'; do
+    for d in 'image-q/demo' 'better-sqlite3/Release' 'better-sqlite3/deps/sqlite3.tar.gz' '@jimp/plugin-print/fonts' 'jimp/browser' 'jimp/fonts' \
+        '@electron-internal' 'electron' 'es-toolkit'; do
         if [[ -e "$DIR"/node_modules/"$d" ]]; then
-            rm -rv "$DIR"/node_modules/"$d"
+            rm -rf "$DIR"/node_modules/"$d"
         fi
     done
 
+# keep only the boxicons files served at runtime
+    if [[ -d "$DIR"/node_modules/boxicons ]]; then
+        find "$DIR"/node_modules/boxicons -mindepth 1 -maxdepth 1 \
+            ! -name css ! -name fonts ! -name package.json ! -name LICENSE \
+            -exec rm -rf {} +
+    fi
+
+# keep only the force-graph bundle served at runtime
+    if [[ -d "$DIR"/node_modules/force-graph ]]; then
+        find "$DIR"/node_modules/force-graph -mindepth 1 -maxdepth 1 \
+            ! -name dist ! -name package.json ! -name LICENSE \
+            -exec rm -rf {} +
+    fi
+
 # delete all tests (there are often large images as test file for jimp etc.)
     find "$DIR"/node_modules -type d \( -name test -o -name docs -o -name demo \) -prune -exec rm -rf {} +
+
+# remove type declarations and Markdown documentation not used at runtime
+    find "$DIR"/node_modules -type f \
+        \( -name '*.d.ts' -o -iname 'readme*.md' -o -iname 'changelog*.md' -o -iname 'history*.md' \) \
+        -delete
 
     rm -rf "$DIR"/node_modules/@excalidraw/excalidraw/dist/dev \
         "$DIR"/node_modules/@excalidraw/excalidraw/dist/types \
@@ -102,6 +122,7 @@ d="$DIR"/src/public
 [[ -d "$d"/app-dist ]] || mkdir -pv "$d"/app-dist
 cp "$d"/app/share.js "$d"/app-dist/
 cp -r "$d"/app/doc_notes "$d"/app-dist/
+find "$d"/app-dist -type f -name '*.map' -delete
 
 rm -rf "$d"/app
 unset f d DIR
