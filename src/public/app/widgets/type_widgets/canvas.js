@@ -103,7 +103,7 @@ export default class ExcalidrawTypeWidget extends TypeWidget {
         this.SCENE_VERSION_ERROR = -2; // -2 indicates error
 
         // ensure that assets are loaded from trilium
-        window.EXCALIDRAW_ASSET_PATH = `${window.location.origin}/node_modules/@excalidraw/excalidraw/dist/`;
+        window.EXCALIDRAW_ASSET_PATH = `${window.location.origin}/${window.glob.assetPath}/node_modules/@excalidraw/excalidraw/dist/prod/`;
 
         // temporary vars
         this.currentNoteId = "";
