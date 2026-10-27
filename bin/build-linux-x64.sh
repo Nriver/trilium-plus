@@ -19,6 +19,12 @@ rm -rf "$BUILD_DIR"
 
 mv "./dist/Trilium Notes-linux-x64" "$BUILD_DIR"
 
+# keep only en-US and zh-CN Chromium locales (other languages fall back to en-US)
+if [[ -d "$BUILD_DIR/locales" ]]; then
+    find "$BUILD_DIR/locales" -mindepth 1 -maxdepth 1 \
+        ! -name 'en-US.pak' ! -name 'zh-CN.pak' -delete
+fi
+
 cp images/app-icons/png/128x128.png "$BUILD_DIR"/icon.png
 cp bin/tpl/anonymize-database.sql "$BUILD_DIR"/
 

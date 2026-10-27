@@ -24,6 +24,16 @@ rm -rf $BUILD_DIR
 # Mac build has by default useless directory level
 mv "./dist/Trilium Notes-darwin-x64" $BUILD_DIR
 
+# keep only Chinese and English Chromium locales (other languages fall back to en-US)
+APP_RESOURCES="$BUILD_DIR/Trilium Notes.app/Contents/Resources"
+FRAMEWORK_RESOURCES="$BUILD_DIR/Trilium Notes.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources"
+for resources_dir in "$APP_RESOURCES" "$FRAMEWORK_RESOURCES"; do
+    if [[ -d "$resources_dir" ]]; then
+        find "$resources_dir" -mindepth 1 -maxdepth 1 -type d -name '*.lproj' \
+            ! -name 'en*.lproj' ! -name 'zh*.lproj' -exec rm -rf {} +
+    fi
+done
+
 cp bin/tpl/anonymize-database.sql $BUILD_DIR/
 
 cp -r dump-db $BUILD_DIR/
