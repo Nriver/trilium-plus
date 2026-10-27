@@ -187,8 +187,9 @@ function register(app) {
 
 
     route(GET, '/api/branches/:branchId/export/:type/:format/:version/:taskId', [auth.checkApiAuthOrElectron], exportRoute.exportBranch);
-    route(PST, '/api/notes/:parentNoteId/notes-import', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware], importRoute.importNotesToBranch, apiResultHandler);
-    route(PST, '/api/notes/:parentNoteId/attachments-import', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware], importRoute.importAttachmentsToNote, apiResultHandler);
+    // these handlers are async, so they cannot be wrapped in a transaction
+    route(PST, '/api/notes/:parentNoteId/notes-import', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware], importRoute.importNotesToBranch, apiResultHandler, false);
+    route(PST, '/api/notes/:parentNoteId/attachments-import', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware], importRoute.importAttachmentsToNote, apiResultHandler, false);
 
     apiRoute(GET, '/api/notes/:noteId/attributes', attributesRoute.getEffectiveNoteAttributes);
     apiRoute(PST, '/api/notes/:noteId/attributes', attributesRoute.addNoteAttribute);
@@ -214,8 +215,9 @@ function register(app) {
     apiRoute(PST, '/api/password/change', passwordApiRoute.changePassword);
     apiRoute(PST, '/api/password/reset', passwordApiRoute.resetPassword);
 
-    apiRoute(PST, '/api/sync/test', syncApiRoute.testSync);
-    apiRoute(PST, '/api/sync/now', syncApiRoute.syncNow);
+    // sync handlers are async and run their own transactions, so they must not be wrapped here
+    route(PST, '/api/sync/test', [auth.checkApiAuth, csrfMiddleware], syncApiRoute.testSync, apiResultHandler, false);
+    route(PST, '/api/sync/now', [auth.checkApiAuth, csrfMiddleware], syncApiRoute.syncNow, apiResultHandler, false);
     apiRoute(PST, '/api/sync/fill-entity-changes', syncApiRoute.fillEntityChanges);
     apiRoute(PST, '/api/sync/force-full-sync', syncApiRoute.forceFullSync);
     route(GET, '/api/sync/check', [auth.checkApiAuth], syncApiRoute.checkSync, apiResultHandler);
