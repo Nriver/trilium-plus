@@ -2,7 +2,7 @@ const path = require('path');
 const assetPath = require('./src/services/asset_path.js');
 
 module.exports = {
-    mode: 'production',
+    mode: process.env.TRILIUM_ENV === 'dev' ? 'development' : 'production',
     entry: './src/public/app/excalidraw.js',
     output: {
         publicPath: `${assetPath}/app-dist/`,
@@ -14,6 +14,10 @@ module.exports = {
     },
     devtool: 'source-map',
     target: 'web',
+    cache: {
+        type: 'filesystem',
+        cacheDirectory: path.resolve(__dirname, '.webpack-cache/excalidraw'),
+    },
     module: {
         rules: [
             {
