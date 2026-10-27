@@ -1,16 +1,10 @@
 # Trilium Notes
 
-[English](https://github.com/nriver/trilium-plus/blob/master/README.md) | [Chinese](https://github.com/nriver/trilium-plus/blob/master/README-ZH_CN.md) | [Russian](https://github.com/nriver/trilium-plus/blob/master/README.ru.md) | [Japanese](https://github.com/nriver/trilium-plus/blob/master/README.ja.md)
+本项目是 [zadam/trilium](https://github.com/zadam/trilium) 0.63.7 版本的硬分叉。主要目标是升级安全相关依赖，并引入实用改进以提升笔记体验。
 
-[![Join the chat at https://gitter.im/trilium-notes/Lobby](https://badges.gitter.im/trilium-notes/Lobby.svg)](https://gitter.im/trilium-notes/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Trilium Notes 是一个层次化的笔记应用程序，专注于建立大型个人知识库。请参阅[屏幕截图](https://github.com/nriver/trilium-plus/wiki/Screenshot-tour)以快速了解：
 
-![](https://raw.githubusercontent.com/wiki/zadam/trilium/images/screenshot.png)
-
-Ukraine is currently suffering from Russian aggression, please consider donating to [one of these charities](https://old.reddit.com/r/ukraine/comments/s6g5un/want_to_support_ukraine_heres_a_list_of_charities/).
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Ukraine.svg" alt="drawing" width="600"/>
-<img src="https://signmyrocket.com//uploads/2b2a523cd0c0e76cdbba95a89a9636b2_1676971281.jpg" alt="Trilium Notes supports Ukraine!" width="600"/>
+<a href="https://github.com/nriver/trilium-plus/wiki/Screenshot-tour"><img src="https://raw.githubusercontent.com/wiki/nriver/trilium-plus/images/screenshot.png" alt="Trilium Screenshot" width="1000"></a>
 
 ## 特性
 
@@ -41,10 +35,6 @@ Trilium 可以用作桌面应用程序（Linux 和 Windows）或服务器（Linu
 * 如果要在服务器上安装 Trilium，请参考[此页面](https://github.com/nriver/trilium-plus/wiki/Server-installation)。
   * 当前仅支持（测试过）最近发布的 Chrome 和 Firefox 浏览器。
 
-Trilium 也提供 Flatpak：
-
-[<img width="240" src="https://flathub.org/assets/badges/flathub-badge-en.png">](https://flathub.org/apps/details/com.github.zadam.trilium)
-
 ## 文档
 
 [有关文档页面的完整列表，请参见 Wiki。](https://github.com/nriver/trilium-plus/wiki/)
@@ -55,15 +45,11 @@ Trilium 也提供 Flatpak：
 
 ## 贡献
 
-使用基于浏览器的开发环境
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/nriver/trilium-plus)
-
-或者克隆本仓库到本地，并运行
+克隆本仓库到本地，并运行
 
 ```
-npm install
-npm run start-server
+pnpm install
+pnpm run start-server
 ```
 
 ## 致谢
@@ -73,9 +59,18 @@ npm run start-server
 * [CodeMirror](https://github.com/codemirror/CodeMirror) - 支持大量语言的代码编辑器
 * [jsPlumb](https://github.com/jsplumb/jsplumb) - 强大的可视化连接库。用于[关系图](https://github.com/nriver/trilium-plus/wiki/Relation-map)和[链接图](https://github.com/nriver/trilium-plus/wiki/Link-map)
 
-## 捐赠
+# 💰 捐赠
 
-你可以通过 GitHub Sponsors，[PayPal](https://paypal.me/za4am) 或者比特币 (bitcoin:bc1qv3svjn40v89mnkre5vyvs2xw6y8phaltl385d2) 来捐赠。
+如果你觉得我做的对你有帮助, 欢迎捐赠, 这对我来说是莫大的鼓励!
+
+支付宝:  
+![Alipay](docs/alipay.png)
+
+微信:  
+![Wechat Pay](docs/wechat_pay.png)
+
+Ko-fi:  
+[![Support Me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/nriver)
 
 ## 许可证
 
