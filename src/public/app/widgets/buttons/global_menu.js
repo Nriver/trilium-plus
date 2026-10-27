@@ -301,7 +301,7 @@ export default class GlobalMenuWidget extends BasicWidget {
     }
 
     async fetchLatestVersion() {
-        const RELEASES_API_URL = "https://api.github.com/repos/zadam/trilium/releases/latest";
+        const RELEASES_API_URL = "https://api.github.com/repos/nriver/trilium-plus/releases/latest";
 
         const resp = await fetch(RELEASES_API_URL);
         const data = await resp.json();
@@ -310,7 +310,7 @@ export default class GlobalMenuWidget extends BasicWidget {
     }
 
     downloadLatestVersionCommand() {
-        window.open("https://github.com/zadam/trilium/releases/latest");
+        window.open("https://github.com/nriver/trilium-plus/releases/latest");
     }
 
     activeContextChangedEvent() {

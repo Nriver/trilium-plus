@@ -13,7 +13,7 @@ const TPL = `
         }
     </style>
     
-    <span class="shared-text"></span> <a class="shared-link external"></a>. For help visit <a href="https://github.com/zadam/trilium/wiki/Sharing">wiki</a>.
+    <span class="shared-text"></span> <a class="shared-link external"></a>. For help visit <a href="https://github.com/nriver/trilium-plus/wiki/Sharing">wiki</a>.
 </div>`;
 
 export default class SharedInfoWidget extends NoteContextAwareWidget {

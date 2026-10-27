@@ -24,7 +24,7 @@ body:
 - type: dropdown
   attributes:
     label: What is your setup?
-    description: https://github.com/zadam/trilium/wiki#choose-the-setup
+    description: https://github.com/nriver/trilium-plus/wiki#choose-the-setup
     options:
       - Local (no sync)
       - Local + server sync
@@ -47,6 +47,6 @@ body:
 - type: textarea
   attributes:
     label: Error logs
-    description: Please provide error logs, see [wiki page](https://github.com/zadam/trilium/wiki/Error-logs) for instructions on how to submit them.
+    description: Please provide error logs, see [wiki page](https://github.com/nriver/trilium-plus/wiki/Error-logs) for instructions on how to submit them.
   validations:
     required: false

@@ -161,7 +161,7 @@ function BackendScriptApi(currentNote, apiParams) {
 
     /**
      * This is a powerful search method - you can search by attributes and their values, e.g.:
-     * "#dateModified =* MONTH AND #log". See {@link https://github.com/zadam/trilium/wiki/Search} for full documentation for all options
+     * "#dateModified =* MONTH AND #log". See {@link https://github.com/nriver/trilium-plus/wiki/Search} for full documentation for all options
      *
      * @method
      * @param {string} query
@@ -185,7 +185,7 @@ function BackendScriptApi(currentNote, apiParams) {
 
     /**
      * This is a powerful search method - you can search by attributes and their values, e.g.:
-     * "#dateModified =* MONTH AND #log". See {@link https://github.com/zadam/trilium/wiki/Search} for full documentation for all options
+     * "#dateModified =* MONTH AND #log". See {@link https://github.com/nriver/trilium-plus/wiki/Search} for full documentation for all options
      *
      * @method
      * @param {string} query
@@ -453,7 +453,7 @@ function BackendScriptApi(currentNote, apiParams) {
      * @param {string} parentNoteId - this note's child notes will be sorted
      * @param {object} [sortConfig]
      * @param {string} [sortConfig.sortBy=title] - 'title', 'dateCreated', 'dateModified' or a label name
-     *                                See {@link https://github.com/zadam/trilium/wiki/Sorting} for details.
+     *                                See {@link https://github.com/nriver/trilium-plus/wiki/Sorting} for details.
      * @param {boolean} [sortConfig.reverse=false]
      * @param {boolean} [sortConfig.foldersFirst=false]
      * @returns {void}
@@ -678,7 +678,7 @@ function BackendScriptApi(currentNote, apiParams) {
     /**
      * This object contains "at your risk" and "no BC guarantees" objects for advanced use cases.
      *
-     * @property {Becca} becca - provides access to the backend in-memory object graph, see {@link https://github.com/zadam/trilium/blob/master/src/becca/becca.js}
+     * @property {Becca} becca - provides access to the backend in-memory object graph, see {@link https://github.com/nriver/trilium-plus/blob/master/src/becca/becca.js}
      */
     this.__private = {
         becca

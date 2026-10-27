@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zadam/trilium.git"
+    "url": "git+https://github.com/nriver/trilium-plus.git"
   },
   "author": "zadam",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/zadam/trilium/issues"
+    "url": "https://github.com/nriver/trilium-plus/issues"
   },
-  "homepage": "https://github.com/zadam/trilium/dump-db#readme",
+  "homepage": "https://github.com/nriver/trilium-plus/dump-db#readme",
   "dependencies": {
     "better-sqlite3": "7.5.0",
     "mime-types": "2.1.34",

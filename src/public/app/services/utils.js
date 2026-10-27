@@ -330,7 +330,7 @@ function initHelpDropdown($el) {
     initHelpButtons($dropdownMenu);
 }
 
-const wikiBaseUrl = "https://github.com/zadam/trilium/wiki/";
+const wikiBaseUrl = "https://github.com/nriver/trilium-plus/wiki/";
 
 function openHelp($button) {
     const helpPage = $button.attr("data-help-page");

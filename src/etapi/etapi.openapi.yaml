@@ -6,7 +6,7 @@ info:
   contact:
     name: zadam
     email: zadam.apps@gmail.com
-    url: https://github.com/zadam/trilium
+    url: https://github.com/nriver/trilium-plus
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -48,7 +48,7 @@ paths:
         - name: search
           in: query
           required: true
-          description: search query string as described in https://github.com/zadam/trilium/wiki/Search
+          description: search query string as described in https://github.com/nriver/trilium-plus/wiki/Search
           schema:
             type: string
           examples:
