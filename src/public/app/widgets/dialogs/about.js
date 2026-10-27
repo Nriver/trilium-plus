@@ -17,7 +17,7 @@ const TPL = `
                 <table class="table table-borderless">
                     <tr>
                         <th>Homepage:</th>
-                        <td><a href="https://github.com/zadam/trilium" class="external">https://github.com/zadam/trilium</a></td>
+                        <td><a href="https://github.com/nriver/trilium-plus" class="external">https://github.com/nriver/trilium-plus</a></td>
                     </tr>
                     <tr>
                         <th>App version:</th>
@@ -70,7 +70,7 @@ export default class AboutDialog extends BasicWidget {
         this.$syncVersion.text(appInfo.syncVersion);
         this.$buildDate.text(appInfo.buildDate);
         this.$buildRevision.text(appInfo.buildRevision);
-        this.$buildRevision.attr('href', `https://github.com/zadam/trilium/commit/${appInfo.buildRevision}`);
+        this.$buildRevision.attr('href', `https://github.com/nriver/trilium-plus/commit/${appInfo.buildRevision}`);
         this.$dataDirectory.text(appInfo.dataDirectory);
     }
 

@@ -9,7 +9,7 @@ const SYNC_VERSION = 32;
 const CLIPPER_PROTOCOL_VERSION = "1.0";
 
 module.exports = {
-    appVersion: packageJson.version,
+    appVersion: packageJson.version + ' Plus',
     dbVersion: APP_DB_VERSION,
     nodeVersion: process.version,
     syncVersion: SYNC_VERSION,
