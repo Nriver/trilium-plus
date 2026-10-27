@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-export GITHUB_REPO=trilium
-
 if [[ $# -eq 0 ]] ; then
     echo "Missing argument of new version"
     exit 1
@@ -62,6 +60,7 @@ fi
 echo "$GITHUB_CLI_AUTH_TOKEN" | gh auth login --with-token
 
 gh release create "$TAG" \
+    --repo Nriver/trilium-plus \
     --title "$TAG release" \
     --notes "" \
     $EXTRA \
