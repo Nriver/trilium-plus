@@ -24,7 +24,7 @@ jq '.version = "'$VERSION'"' package.json|sponge package.json
 
 git add package.json
 
-echo 'module.exports = { buildDate:"'`date --iso-8601=seconds`'", buildRevision: "'`git log -1 --format="%H"`'" };' > src/services/build.js
+echo 'module.exports = { buildDate:"'`TZ=UTC date --iso-8601=seconds`'", buildRevision: "'`git log -1 --format="%H"`'" };' > src/services/build.js
 
 git add src/services/build.js
 
