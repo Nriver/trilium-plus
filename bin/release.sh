@@ -44,7 +44,6 @@ bin/build.sh
 
 LINUX_X64_BUILD=trilium-linux-x64-$VERSION.tar.xz
 DEBIAN_X64_BUILD=trilium_${VERSION}_amd64.deb
-WINDOWS_X64_BUILD=trilium-windows-x64-$VERSION.zip
 WINDOWS_X64_7Z_BUILD=trilium-windows-x64-$VERSION.7z
 MAC_X64_BUILD=trilium-mac-x64-$VERSION.zip
 SERVER_BUILD=trilium-linux-x64-server-$VERSION.tar.xz
@@ -66,7 +65,6 @@ gh release create "$TAG" \
     $EXTRA \
     "dist/$DEBIAN_X64_BUILD" \
     "dist/$LINUX_X64_BUILD" \
-    "dist/$WINDOWS_X64_BUILD" \
     "dist/$WINDOWS_X64_7Z_BUILD" \
     "dist/$MAC_X64_BUILD" \
     "dist/$SERVER_BUILD"

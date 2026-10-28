@@ -51,5 +51,4 @@ fi
 cd dist
 
 rm -f "trilium-windows-x64-${VERSION}.zip" "trilium-windows-x64-${VERSION}.7z"
-zip -r9 "trilium-windows-x64-${VERSION}.zip" trilium-windows-x64
 7z a -t7z -mx=9 "trilium-windows-x64-${VERSION}.7z" trilium-windows-x64 >/dev/null
