@@ -3,6 +3,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+. bin/lib/node-cache.sh
+
 PKG_DIR=dist/trilium-linux-arm64-server
 NODE_VERSION="${NODE_VERSION:-24.22.1}"
 export NODE_VERSION
@@ -14,24 +16,7 @@ fi
 
 mkdir -p dist
 
-cd dist
-
-NODE_TARBALL="node-v${NODE_VERSION}-linux-arm64.tar.xz"
-NODE_URL="https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TARBALL}"
-
-echo "Downloading Node.js v${NODE_VERSION}..."
-if command -v proxychains &>/dev/null; then
-    proxychains wget -O "$NODE_TARBALL" "$NODE_URL" || wget -O "$NODE_TARBALL" "$NODE_URL"
-else
-    wget -O "$NODE_TARBALL" "$NODE_URL"
-fi
-
-tar xfJ "$NODE_TARBALL"
-rm "$NODE_TARBALL"
-cd ..
-
-rm -rf "$PKG_DIR/node"
-mv "dist/node-v${NODE_VERSION}-linux-arm64" "$PKG_DIR/node"
+fetch_node "$NODE_VERSION" linux-arm64 "$PKG_DIR/node"
 
 rm -rf "$PKG_DIR/node/lib/node_modules/npm"
 rm -rf "$PKG_DIR/node/include/node"
