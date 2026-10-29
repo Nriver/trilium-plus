@@ -59,7 +59,7 @@
     "electron-dl": "3.5.2",
     "electron-window-state": "5.0.3",
     "escape-html": "1.0.3",
-    "express": "4.22.1",
+    "express": "4.22.3",
     "express-partial-content": "1.0.2",
     "express-rate-limit": "8.7.1",
     "express-session": "1.19.0",
