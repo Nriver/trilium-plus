@@ -73,7 +73,7 @@ fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2) + "\n");
 if [[ -d "$DIR"/node_modules ]]; then
 # cleanup of useless files in dependencies
     for d in 'image-q/demo' 'better-sqlite3/Release' 'better-sqlite3/deps/sqlite3.tar.gz' '@jimp/plugin-print/fonts' 'jimp/browser' 'jimp/fonts' \
-        '@electron-internal' 'electron' 'es-toolkit'; do
+        '@electron-internal' 'electron'; do
         if [[ -e "$DIR"/node_modules/"$d" ]]; then
             rm -rf "$DIR"/node_modules/"$d"
         fi
