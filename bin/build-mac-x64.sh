@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+. bin/lib/build-cache.sh
+
 SRC_DIR=./dist/trilium-mac-x64-src
 
 if [ "${1:-}" != "DONTCOPY" ]
@@ -13,10 +15,12 @@ rm -f $SRC_DIR/src/public/app-dist/*.mobile.*
 ./bin/prune-better-sqlite3.sh "$SRC_DIR" darwin-x64
 
 ELECTRON_VERSION=$(jq -r ".devDependencies.electron" package.json)
+ELECTRON_CACHE_DIR="$(electron_cache_dir)"
+mkdir -p "$ELECTRON_CACHE_DIR"
 
 echo "Packaging mac x64 electron build"
 
-./node_modules/.bin/electron-packager $SRC_DIR --asar --out=dist --executable-name=trilium --platform=darwin --arch=x64 --overwrite --icon=images/app-icons/mac/icon.icns --electron-version="$ELECTRON_VERSION"
+./node_modules/.bin/electron-packager $SRC_DIR --asar --out=dist --executable-name=trilium --platform=darwin --arch=x64 --overwrite --icon=images/app-icons/mac/icon.icns --electron-version="$ELECTRON_VERSION" --download.cacheRoot="$ELECTRON_CACHE_DIR"
 
 BUILD_DIR=./dist/trilium-mac-x64
 rm -rf $BUILD_DIR

@@ -1,17 +1,26 @@
 #!/usr/bin/env bash
-# Shared cache for Node.js distributions used by the server build scripts.
+# Shared cache helpers for build-time downloads.
 #
-# The cache lives in dist_cache/ instead of dist/ so it survives `rm -rf dist/*`
-# in build.sh and can be reused by every build. Override the location with
-# TRILIUM_NODE_CACHE_DIR.
+# Caches live in dist_cache/ instead of dist/ so they survive `rm -rf dist/*`
+# in build.sh and can be reused by every build. Override the root location with
+# TRILIUM_DIST_CACHE_DIR, or the individual caches with TRILIUM_NODE_CACHE_DIR
+# and TRILIUM_ELECTRON_CACHE_DIR.
 
-node_cache_dir() {
+dist_cache_dir() {
     local script_dir repo_root
 
     script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     repo_root="$(cd "$script_dir/../.." && pwd)"
 
-    printf '%s\n' "${TRILIUM_NODE_CACHE_DIR:-$repo_root/dist_cache/node}"
+    printf '%s\n' "${TRILIUM_DIST_CACHE_DIR:-$repo_root/dist_cache}"
+}
+
+node_cache_dir() {
+    printf '%s\n' "${TRILIUM_NODE_CACHE_DIR:-$(dist_cache_dir)/node}"
+}
+
+electron_cache_dir() {
+    printf '%s\n' "${TRILIUM_ELECTRON_CACHE_DIR:-$(dist_cache_dir)/electron}"
 }
 
 download_file() {

@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-. bin/lib/node-cache.sh
+. bin/lib/build-cache.sh
 
 PKG_DIR=dist/trilium-linux-x64-server
 NODE_VERSION="${NODE_VERSION:-24.22.1}"
