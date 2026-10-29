@@ -63,14 +63,14 @@ export default class MermaidWidget extends NoteContextAwareWidget {
             startOnLoad: false,
             theme: mermaidTheme.trim(),
             securityLevel: 'antiscript',
-            flow: { useMaxWidth: false },
+            flowchart: { useMaxWidth: false },
             sequence: { useMaxWidth: false },
             gantt: { useMaxWidth: false },
             "class": { useMaxWidth: false },
             state: { useMaxWidth: false },
             pie: { useMaxWidth: true },
             journey: { useMaxWidth: false },
-            git: { useMaxWidth: false },
+            gitGraph: { useMaxWidth: false },
         });
 
         this.$display.empty();
