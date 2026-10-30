@@ -105,6 +105,13 @@ function register(app) {
         skipSuccessfulRequests: true // successful auth to rate-limited ETAPI routes isn't counted. However, successful auth to /login is still counted!
     });
 
+    const syncAuthRateLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 10,
+        skipSuccessfulRequests: true,
+        handler: (req, res) => res.status(429).json({ message: 'Too many failed sync authentication attempts, please try again later.' })
+    });
+
     route(PST, '/login', [loginRateLimiter], loginRoute.login);
     route(PST, '/logout', [csrfMiddleware, auth.checkAuth], loginRoute.logout);
     route(PST, '/set-password', [auth.checkAppInitialized, auth.checkPasswordNotSet], loginRoute.setPassword);
@@ -238,7 +245,7 @@ function register(app) {
     route(GET, '/api/setup/status', [], setupApiRoute.getStatus, apiResultHandler);
     route(PST, '/api/setup/new-document', [auth.checkAppNotInitialized], setupApiRoute.setupNewDocument, apiResultHandler, false);
     route(PST, '/api/setup/sync-from-server', [auth.checkAppNotInitialized], setupApiRoute.setupSyncFromServer, apiResultHandler, false);
-    route(GET, '/api/setup/sync-seed', [auth.checkCredentials], setupApiRoute.getSyncSeed, apiResultHandler);
+    route(GET, '/api/setup/sync-seed', [syncAuthRateLimiter, auth.checkCredentials], setupApiRoute.getSyncSeed, apiResultHandler);
     route(PST, '/api/setup/sync-seed', [auth.checkAppNotInitialized], setupApiRoute.saveSyncSeed, apiResultHandler, false);
 
     apiRoute(GET, '/api/autocomplete', autocompleteApiRoute.getAutocomplete);
@@ -252,7 +259,7 @@ function register(app) {
     apiRoute(PST, '/api/bulk-action/execute', bulkActionRoute.execute);
     apiRoute(PST, '/api/bulk-action/affected-notes', bulkActionRoute.getAffectedNoteCount);
 
-    route(PST, '/api/login/sync', [], loginApiRoute.loginSync, apiResultHandler);
+    route(PST, '/api/login/sync', [syncAuthRateLimiter], loginApiRoute.loginSync, apiResultHandler, false);
     // this is for entering protected mode so user has to be already logged-in (that's the reason we don't require username)
     apiRoute(PST, '/api/login/protected', loginApiRoute.loginToProtectedSession);
     apiRoute(PST, '/api/login/protected/touch', loginApiRoute.touchProtectedSession);

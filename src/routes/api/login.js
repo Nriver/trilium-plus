@@ -1,5 +1,6 @@
 "use strict";
 
+const crypto = require('crypto');
 const options = require('../../services/options.js');
 const utils = require('../../services/utils.js');
 const dateUtils = require('../../services/date_utils.js');
@@ -13,19 +14,79 @@ const sql = require('../../services/sql.js');
 const ws = require('../../services/ws.js');
 const etapiTokenService = require('../../services/etapi_tokens.js');
 
-function loginSync(req) {
+const SYNC_LOGIN_VALIDITY_MS = 5 * 60 * 1000;
+const MAX_USED_SYNC_LOGIN_TOKENS = 10000;
+const usedSyncLoginTokens = new Map();
+
+function safeCompare(a, b) {
+    if (typeof a !== 'string' || typeof b !== 'string') {
+        return false;
+    }
+
+    const aBuffer = Buffer.from(a);
+    const bBuffer = Buffer.from(b);
+
+    return aBuffer.length === bBuffer.length && crypto.timingSafeEqual(aBuffer, bBuffer);
+}
+
+function pruneUsedSyncLoginTokens(now) {
+    for (const [key, expiresAt] of usedSyncLoginTokens) {
+        if (expiresAt <= now) {
+            usedSyncLoginTokens.delete(key);
+        }
+    }
+}
+
+function isSyncLoginTokenUsed(key, now) {
+    pruneUsedSyncLoginTokens(now);
+
+    return usedSyncLoginTokens.has(key);
+}
+
+function markSyncLoginTokenUsed(key, expiresAt, now) {
+    pruneUsedSyncLoginTokens(now);
+
+    usedSyncLoginTokens.set(key, expiresAt);
+
+    while (usedSyncLoginTokens.size > MAX_USED_SYNC_LOGIN_TOKENS) {
+        const oldestKey = usedSyncLoginTokens.keys().next().value;
+        usedSyncLoginTokens.delete(oldestKey);
+    }
+}
+
+function regenerateSession(req) {
+    return new Promise((resolve, reject) => {
+        req.session.regenerate(err => {
+            if (err) {
+                reject(err);
+            }
+            else {
+                resolve();
+            }
+        });
+    });
+}
+
+async function loginSync(req) {
     if (!sqlInit.schemaExists()) {
         return [500, { message: "DB schema does not exist, can't sync." }];
     }
 
     const timestampStr = req.body.timestamp;
 
+    if (typeof timestampStr !== 'string') {
+        return [401, { message: 'Auth request timestamp is invalid.' }];
+    }
+
     const timestamp = dateUtils.parseDateTime(timestampStr);
+    const timestampMs = timestamp.getTime();
+    const now = Date.now();
 
-    const now = new Date();
+    if (!Number.isFinite(timestampMs)) {
+        return [401, { message: 'Auth request timestamp is invalid.' }];
+    }
 
-    // login token is valid for 5 minutes
-    if (Math.abs(timestamp.getTime() - now.getTime()) > 5 * 60 * 1000) {
+    if (Math.abs(timestampMs - now) > SYNC_LOGIN_VALIDITY_MS) {
         return [401, { message: 'Auth request time is out of sync, please check that both client and server have correct time. The difference between clocks has to be smaller than 5 minutes.' }];
     }
 
@@ -40,9 +101,19 @@ function loginSync(req) {
 
     const givenHash = req.body.hash;
 
-    if (expectedHash !== givenHash) {
+    if (!safeCompare(expectedHash, givenHash)) {
         return [400, { message: "Sync login credentials are incorrect. It looks like you're trying to sync two different initialized documents which is not possible." }];
     }
+
+    const loginTokenKey = `${timestampStr}|${givenHash}`;
+
+    if (isSyncLoginTokenUsed(loginTokenKey, now)) {
+        return [401, { message: 'Auth request has already been used.' }];
+    }
+
+    markSyncLoginTokenUsed(loginTokenKey, timestampMs + SYNC_LOGIN_VALIDITY_MS, now);
+
+    await regenerateSession(req);
 
     req.session.loggedIn = true;
 
