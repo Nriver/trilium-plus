@@ -65,17 +65,22 @@ async function copy(branchIds) {
     clipboardBranchIds = branchIds;
     clipboardMode = 'copy';
 
-    if (utils.isElectron()) {
-        // https://github.com/zadam/trilium/issues/2401
-        const {clipboard} = require('electron');
-        const links = [];
+    const links = [];
+    for (const branch of froca.getBranches(clipboardBranchIds)) {
+        const $link = await linkService.createLink(`${branch.parentNoteId}/${branch.noteId}`, { referenceLink: true });
+        links.push($link[0].outerHTML);
+    }
 
-        for (const branch of froca.getBranches(clipboardBranchIds)) {
-            const $link = await linkService.createLink(`${branch.parentNoteId}/${branch.noteId}`, { referenceLink: true });
-            links.push($link[0].outerHTML);
-        }
+    const htmlContent = links.join(', ');
 
-        clipboard.writeHTML(links.join(', '));
+    try {
+        // Write HTML using standard modern navigator.clipboard API
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        await navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })]);
+    } catch (err) {
+        console.error("Failed to copy HTML to clipboard, falling back to text:", err);
+        // Fallback option: attempt to write plain text if writing HTML fails
+        await navigator.clipboard.writeText(htmlContent);
     }
 
     toastService.showMessage("Note(s) have been copied into clipboard.");
