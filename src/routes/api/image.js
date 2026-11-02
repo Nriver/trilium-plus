@@ -76,7 +76,7 @@ function returnAttachedImage(req, res) {
             .send(`Attachment '${attachment.attachmentId}' has role '${attachment.role}', but 'image' was expected.`);
     }
 
-    res.set('Content-Type', attachment.mime);
+    res.set('Content-Type', /^[\w.+-]+\/[\w.+-]+$/.test(attachment.mime) ? attachment.mime : 'application/octet-stream');
     res.set("Cache-Control", "no-cache, no-store, must-revalidate");
     res.send(attachment.getContent());
 }

@@ -148,10 +148,12 @@ function saveImageToAttachment(noteId, uploadBuffer, originalName, shrinkImageSw
     const fileName = sanitizeFilename(originalName);
     const note = becca.getNoteOrThrow(noteId);
 
+    // set the original mime and content immediately so the image can be served before async processing finishes
     let attachment = note.saveAttachment({
         role: 'image',
-        mime: 'unknown',
-        title: fileName
+        mime: getImageMimeFromExtension(getImageType(uploadBuffer).ext),
+        title: fileName,
+        content: uploadBuffer
     });
 
     // TODO: this is a quick-fix solution of a recursive bug - this is called from asyncPostProcessContent()
