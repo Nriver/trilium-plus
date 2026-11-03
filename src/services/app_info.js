@@ -2,6 +2,7 @@
 
 const build = require('./build.js');
 const packageJson = require('../../package.json');
+const path = require('path');
 const {TRILIUM_DATA_DIR} = require('./data_dir.js');
 
 const APP_DB_VERSION = 228;
@@ -15,7 +16,7 @@ module.exports = {
     syncVersion: SYNC_VERSION,
     buildDate: build.buildDate,
     buildRevision: build.buildRevision,
-    dataDirectory: TRILIUM_DATA_DIR,
+    dataDirectory: path.resolve(TRILIUM_DATA_DIR),
     clipperProtocolVersion: CLIPPER_PROTOCOL_VERSION,
     utcDateTime: new Date().toISOString() // for timezone inference
 };
