@@ -58,11 +58,22 @@ function setupContextMenu() {
             items.push({
                 title: `Copy link`,
                 uiIcon: "bx bx-copy",
-                handler: () => {
-                    electron.clipboard.write({
-                        bookmark: params.linkText,
-                        text: params.linkURL
-                    });
+                handler: async () => {
+                    const linkElement = document.createElement('a');
+                    linkElement.href = params.linkURL;
+                    linkElement.textContent = params.linkText || params.linkURL;
+
+                    try {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({
+                                'text/html': new Blob([linkElement.outerHTML], { type: 'text/html' }),
+                                'text/plain': new Blob([params.linkURL], { type: 'text/plain' })
+                            })
+                        ]);
+                    } catch (err) {
+                        console.error("Failed to copy link as HTML, falling back to text:", err);
+                        await navigator.clipboard.writeText(params.linkURL);
+                    }
                 }
             });
         }
