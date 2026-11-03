@@ -69,7 +69,7 @@ export default class AboutDialog extends BasicWidget {
         this.$dbVersion.text(appInfo.dbVersion);
         this.$syncVersion.text(appInfo.syncVersion);
         this.$buildDate.text(appInfo.buildDate);
-        this.$buildRevision.text(appInfo.buildRevision);
+        this.$buildRevision.text(appInfo.buildRevision.slice(0, 7));
         this.$buildRevision.attr('href', `https://github.com/nriver/trilium-plus/commit/${appInfo.buildRevision}`);
         this.$dataDirectory.text(appInfo.dataDirectory);
     }
