@@ -135,6 +135,12 @@ function ajax(url, method, data, headers, silentNotFound) {
                 });
             },
             error: async jqXhr => {
+                if (jqXhr.status === 401 && !utils.isElectron()) {
+                    // plain browser without a login session (e.g. visiting the Electron server port)
+                    window.location.href = 'login';
+                    return rej(jqXhr.responseText);
+                }
+
                 if (silentNotFound && jqXhr.status === 404) {
                     // report nothing
                 } else {
