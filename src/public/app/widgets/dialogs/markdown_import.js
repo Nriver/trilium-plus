@@ -69,10 +69,9 @@ export default class MarkdownImportDialog extends BasicWidget {
         }
 
         if (utils.isElectron()) {
-            const {clipboard} = utils.dynamicRequire('electron');
-            const text = clipboard.readText();
+            const text = await navigator.clipboard.readText();
 
-            this.convertMarkdownToHtml(text);
+            await this.convertMarkdownToHtml(text);
         }
         else {
             utils.openDialog(this.$widget);
