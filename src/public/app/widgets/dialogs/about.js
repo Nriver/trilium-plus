@@ -1,5 +1,6 @@
 import server from "../../services/server.js";
 import utils from "../../services/utils.js";
+import toastService from "../../services/toast.js";
 import BasicWidget from "../basic_widget.js";
 
 const TPL = `
@@ -43,7 +44,7 @@ const TPL = `
 
                     <tr>
                         <th>Data directory:</th>
-                        <td class="data-directory"></td>
+                        <td><button type="button" class="data-directory btn btn-link p-0 text-left"></button></td>
                     </tr>
                 </table>
             </div>
@@ -60,6 +61,7 @@ export default class AboutDialog extends BasicWidget {
         this.$buildDate = this.$widget.find(".build-date");
         this.$buildRevision = this.$widget.find(".build-revision");
         this.$dataDirectory = this.$widget.find(".data-directory");
+        this.$dataDirectory.on("click", () => this.openDataDirectory());
     }
 
     async refresh() {
@@ -71,7 +73,28 @@ export default class AboutDialog extends BasicWidget {
         this.$buildDate.text(appInfo.buildDate);
         this.$buildRevision.text(appInfo.buildRevision.slice(0, 7));
         this.$buildRevision.attr('href', `https://github.com/nriver/trilium-plus/commit/${appInfo.buildRevision}`);
-        this.$dataDirectory.text(appInfo.dataDirectory);
+        this.dataDirectory = appInfo.dataDirectory;
+        this.$dataDirectory.text(this.dataDirectory);
+        this.$dataDirectory.attr("title", utils.isElectron() ? "Open data directory" : "Copy data directory path");
+    }
+
+    async openDataDirectory() {
+        try {
+            if (utils.isElectron()) {
+                const electron = utils.dynamicRequire("electron");
+                const error = await electron.shell.openPath(this.dataDirectory);
+
+                if (error) {
+                    toastService.showAndLogError(`Could not open data directory: ${error}`);
+                }
+            } else {
+                await navigator.clipboard.writeText(this.dataDirectory);
+                toastService.showMessage("Data directory path copied to clipboard.");
+            }
+        } catch (e) {
+            const action = utils.isElectron() ? "open" : "copy";
+            toastService.showAndLogError(`Could not ${action} data directory: ${e.message}`);
+        }
     }
 
     async openAboutDialogEvent() {
