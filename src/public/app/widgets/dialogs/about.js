@@ -44,7 +44,7 @@ const TPL = `
 
                     <tr>
                         <th>Data directory:</th>
-                        <td><button type="button" class="data-directory btn btn-link p-0 text-left"></button></td>
+                        <td><a href="#" class="data-directory"></a></td>
                     </tr>
                 </table>
             </div>
@@ -61,7 +61,10 @@ export default class AboutDialog extends BasicWidget {
         this.$buildDate = this.$widget.find(".build-date");
         this.$buildRevision = this.$widget.find(".build-revision");
         this.$dataDirectory = this.$widget.find(".data-directory");
-        this.$dataDirectory.on("click", () => this.openDataDirectory());
+        this.$dataDirectory.on("click", (e) => {
+            e.preventDefault();
+            this.openDataDirectory();
+        });
     }
 
     async refresh() {
