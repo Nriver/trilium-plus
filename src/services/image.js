@@ -6,7 +6,6 @@ const protectedSessionService = require('./protected_session.js');
 const noteService = require('./notes.js');
 const optionService = require('./options.js');
 const sql = require('./sql.js');
-const jimp = require('jimp');
 const imageType = require('image-type');
 const sanitizeFilename = require('sanitize-filename');
 const isSvgModule = require('is-svg');
@@ -214,6 +213,7 @@ async function shrinkImage(buffer, originalName) {
 }
 
 async function resize(buffer, quality) {
+    const jimp = require('jimp');
     const imageMaxWidthHeight = optionService.getOptionInt('imageMaxWidthHeight');
 
     const start = Date.now();

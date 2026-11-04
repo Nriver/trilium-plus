@@ -1,7 +1,6 @@
 "use strict";
 
 const becca = require('../../becca/becca.js');
-const { JSDOM } = require("jsdom");
 
 function buildDescendantCountMap(noteIdsToCount) {
     if (!Array.isArray(noteIdsToCount)) {
@@ -247,6 +246,7 @@ function removeImages(document) {
 const EXCERPT_CHAR_LIMIT = 200;
 
 function findExcerpts(sourceNote, referencedNoteId) {
+    const { JSDOM } = require("jsdom");
     const html = sourceNote.getContent();
     const document = new JSDOM(html).window.document;
 

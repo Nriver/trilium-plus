@@ -22,7 +22,6 @@ const ValidationError = require('../errors/validation_error.js');
 const noteTypesService = require('./note_types.js');
 const fs = require("fs");
 const ws = require('./ws.js');
-const html2plaintext = require('html2plaintext')
 
 /** @param {BNote} parentNote */
 function getNewNotePosition(parentNote) {
@@ -631,7 +630,7 @@ function saveAttachments(note, content) {
         const base64data = attachmentMatch[2];
         const buffer = Buffer.from(base64data, 'base64');
 
-        const title = html2plaintext(attachmentMatch[3]);
+        const title = require('html2plaintext')(attachmentMatch[3]);
 
         const attachment = note.saveAttachment({
             role: 'file',

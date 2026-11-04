@@ -1,4 +1,3 @@
-const {JSDOM} = require("jsdom");
 const shaca = require('./shaca/shaca.js');
 const assetPath = require('../services/asset_path.js');
 const shareRoot = require('./share_root.js');
@@ -54,6 +53,7 @@ function renderIndex(result) {
 }
 
 function renderText(result, note) {
+    const {JSDOM} = require("jsdom");
     const document = new JSDOM(result.content || "").window.document;
 
     result.isEmpty = document.body.textContent.trim().length === 0
@@ -126,6 +126,7 @@ function renderCode(result) {
     if (!result.content?.trim()) {
         result.isEmpty = true;
     } else {
+        const {JSDOM} = require("jsdom");
         const document = new JSDOM().window.document;
 
         const preEl = document.createElement('pre');

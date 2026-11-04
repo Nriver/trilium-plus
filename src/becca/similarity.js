@@ -2,7 +2,6 @@ const becca = require('./becca.js');
 const log = require('../services/log.js');
 const beccaService = require('./becca_service.js');
 const dateUtils = require('../services/date_utils.js');
-const {JSDOM} = require("jsdom");
 
 const DEBUG = false;
 
@@ -123,6 +122,7 @@ function buildRewardMap(note) {
     }
 
     if (note.type === 'text' && note.isDecrypted) {
+        const {JSDOM} = require("jsdom");
         const content = note.getContent();
         const dom = new JSDOM(content);
 

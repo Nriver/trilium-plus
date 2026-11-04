@@ -13,8 +13,6 @@ const utils = require('../../services/utils.js');
 const path = require('path');
 const htmlSanitizer = require('../../services/html_sanitizer.js');
 const {formatAttrForSearch} = require('../../services/attribute_formatter.js');
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
 
 function addClipping(req) {
     // if a note under the clipperInbox has the same 'pageUrl' attribute,
@@ -170,6 +168,7 @@ function processContent(images, note, content) {
         rewrittenContent = `<p>${rewrittenContent}</p>`;
     }
     // Create a JSDOM object from the existing HTML content
+    const { JSDOM } = require("jsdom");
     const dom = new JSDOM(rewrittenContent);
 
     // Get the content inside the body tag and serialize it

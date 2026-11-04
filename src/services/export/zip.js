@@ -12,7 +12,6 @@ const sanitize = require("sanitize-filename");
 const fs = require("fs");
 const becca = require('../../becca/becca.js');
 const RESOURCE_DIR = require('../../services/resource_dir.js').RESOURCE_DIR;
-const archiver = require('archiver');
 const log = require('../log.js');
 const TaskContext = require('../task_context.js');
 const ValidationError = require('../../errors/validation_error.js');
@@ -32,6 +31,7 @@ async function exportToZip(taskContext, branch, format, res, setHeaders = true) 
         throw new ValidationError(`Only 'html' and 'markdown' allowed as export format, '${format}' given`);
     }
 
+    const archiver = require('archiver');
     const archive = archiver('zip', {
         zlib: { level: 9 } // Sets the compression level.
     });
