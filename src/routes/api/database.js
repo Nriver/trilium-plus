@@ -10,6 +10,16 @@ function getExistingBackups() {
     return backupService.getExistingBackups();
 }
 
+function getDatabaseInfo() {
+    return {
+        databaseSize: sql.getValue("SELECT page_count * page_size as size FROM pragma_page_count(), pragma_page_size()")
+    };
+}
+
+function deleteBackup(req) {
+    backupService.deleteBackup(req.params.fileName);
+}
+
 async function backupDatabase() {
     return {
         backupFile: await backupService.backupNow("now")
@@ -46,6 +56,8 @@ function checkIntegrity() {
 
 module.exports = {
     getExistingBackups,
+    getDatabaseInfo,
+    deleteBackup,
     backupDatabase,
     vacuumDatabase,
     findAndFixConsistencyIssues,

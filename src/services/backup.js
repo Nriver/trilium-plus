@@ -9,6 +9,7 @@ const syncMutexService = require('./sync_mutex.js');
 const cls = require('./cls.js');
 const sql = require('./sql.js');
 const path = require('path');
+const ValidationError = require('../errors/validation_error.js');
 
 function getExistingBackups() {
     if (!fs.existsSync(dataDir.BACKUP_DIR)) {
@@ -21,8 +22,29 @@ function getExistingBackups() {
             const filePath = path.resolve(dataDir.BACKUP_DIR, fileName);
             const stat = fs.statSync(filePath)
 
-            return {fileName, filePath, mtime: stat.mtime};
-        });
+            return {fileName, filePath, mtime: stat.mtime, size: stat.size};
+        })
+        .sort((a, b) => b.mtime - a.mtime);
+}
+
+function deleteBackup(fileName) {
+    if (typeof fileName !== 'string' || path.basename(fileName) !== fileName || !fileName.includes('backup')) {
+        throw new ValidationError(`Invalid backup file name '${fileName}'.`);
+    }
+
+    const filePath = path.resolve(dataDir.BACKUP_DIR, fileName);
+
+    if (path.dirname(filePath) !== path.resolve(dataDir.BACKUP_DIR)) {
+        throw new ValidationError(`Invalid backup file name '${fileName}'.`);
+    }
+
+    if (!fs.existsSync(filePath)) {
+        throw new ValidationError(`Backup file '${fileName}' does not exist.`);
+    }
+
+    fs.unlinkSync(filePath);
+
+    log.info(`Deleted backup at ${filePath}`);
 }
 
 function regularBackup() {
@@ -75,6 +97,7 @@ if (!fs.existsSync(dataDir.BACKUP_DIR)) {
 
 module.exports = {
     getExistingBackups,
+    deleteBackup,
     backupNow,
     regularBackup
 };

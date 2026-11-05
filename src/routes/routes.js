@@ -303,6 +303,8 @@ function register(app) {
     // backup requires execution outside of transaction
     route(PST, '/api/database/backup-database', [auth.checkApiAuthOrElectron, csrfMiddleware], databaseRoute.backupDatabase, apiResultHandler, false);
     apiRoute(GET, '/api/database/backups', databaseRoute.getExistingBackups);
+    apiRoute(GET, '/api/database/info', databaseRoute.getDatabaseInfo);
+    apiRoute(DEL, '/api/database/backups/:fileName', databaseRoute.deleteBackup);
 
     // VACUUM requires execution outside of transaction
     route(PST, '/api/database/vacuum-database', [auth.checkApiAuthOrElectron, csrfMiddleware], databaseRoute.vacuumDatabase, apiResultHandler, false);
