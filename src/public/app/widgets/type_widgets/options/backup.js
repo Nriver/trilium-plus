@@ -59,6 +59,10 @@ const TPL = `
 </div>
 
 <style>
+    .existing-backup-table .backup-path {
+        word-break: break-all;
+    }
+
     .backup-delete-button {
         display: inline-block;
         cursor: pointer;
@@ -135,12 +139,36 @@ export default class BackupOptions extends OptionsWidget {
         for (const {fileName, filePath, mtime, size} of backupFiles) {
             this.$existingBackupTableBody.append(
                 $("<tr>")
-                    .append($("<td>").text(filePath))
+                    .append($("<td>").append(
+                        $("<a>")
+                            .attr("href", "#")
+                            .attr("title", utils.isElectron() ? "Open containing directory" : "Copy full path")
+                            .addClass("backup-path")
+                            .text(filePath)
+                            .on("click", (e) => {
+                                e.preventDefault();
+                                this.openBackupPath(filePath);
+                            })))
                     .append($("<td>").text(mtime ? utils.formatDateTime(new Date(mtime)) : ""))
                     .append($("<td>").text(size != null ? utils.formatSize(size) : ""))
                     .append($("<td>").append(
                         $('<span class="bx bx-trash backup-delete-button" title="Delete this backup"></span>')
                             .on("click", () => this.deleteBackup(fileName, filePath)))));
+        }
+    }
+
+    async openBackupPath(filePath) {
+        try {
+            if (utils.isElectron()) {
+                const electron = utils.dynamicRequire("electron");
+                electron.shell.showItemInFolder(filePath);
+            } else {
+                await navigator.clipboard.writeText(filePath);
+                toastService.showMessage("Backup file path copied to clipboard.");
+            }
+        } catch (e) {
+            const action = utils.isElectron() ? "open" : "copy";
+            toastService.showAndLogError(`Could not ${action} backup file path: ${e.message}`);
         }
     }
 
