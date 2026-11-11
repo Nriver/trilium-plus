@@ -9,6 +9,7 @@ import ScreenContainer from "../widgets/mobile_widgets/screen_container.js";
 import ScrollingContainer from "../widgets/containers/scrolling_container.js";
 import ProtectedSessionPasswordDialog from "../widgets/dialogs/protected_session_password.js";
 import ConfirmDialog from "../widgets/dialogs/confirm.js";
+import PromptDialog from "../widgets/dialogs/prompt.js";
 import FilePropertiesWidget from "../widgets/ribbon_widgets/file_properties.js";
 import FloatingButtons from "../widgets/floating_buttons/floating_buttons.js";
 import EditButton from "../widgets/buttons/edit_button.js";
@@ -170,6 +171,7 @@ export default class MobileLayout {
                 )
                 .child(new ProtectedSessionPasswordDialog())
                 .child(new ConfirmDialog())
+                .child(new PromptDialog())
             );
     }
 }
