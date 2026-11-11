@@ -144,7 +144,10 @@ export default class NoteDetailWidget extends NoteContextAwareWidget {
         this.$widget.toggleClass("full-height",
             (
                 !this.noteContext.hasNoteList()
-                && ['canvas', 'webView', 'noteMap'].includes(this.type)
+                && (
+                    ['canvas', 'webView', 'noteMap'].includes(this.type)
+                    || this.noteId === '_backendLog'
+                )
                 && this.mime !== 'text/x-sqlite;schema=trilium'
             )
             || this.noteContext.viewScope.viewMode === 'attachments'

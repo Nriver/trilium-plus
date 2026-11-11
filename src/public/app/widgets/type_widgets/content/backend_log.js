@@ -20,6 +20,8 @@ const TPL = `<div style="height: 100%; display: flex; flex-direction: column;">
 export default class BackendLogWidget extends NoteContextAwareWidget {
     doRender() {
         this.$widget = $(TPL);
+        this.contentSized();
+
         this.$backendLogTextArea = this.$widget.find(".backend-log-textarea");
         this.$refreshBackendLog = this.$widget.find(".refresh-backend-log-button");
 
