@@ -99,6 +99,18 @@ const openFile = (req, res) => downloadNoteInt(req.params.noteId, res, false);
 const downloadAttachment = (req, res) => downloadAttachmentInt(req.params.attachmentId, res, true);
 const openAttachment = (req, res) => downloadAttachmentInt(req.params.attachmentId, res, false);
 
+function getNoteDownloadInfo(req) {
+    const note = becca.getNoteOrThrow(req.params.noteId);
+
+    return { fileName: note.getFileName() };
+}
+
+function getAttachmentDownloadInfo(req) {
+    const attachment = becca.getAttachmentOrThrow(req.params.attachmentId);
+
+    return { fileName: attachment.getFileName() };
+}
+
 function getContentMimeType(entity, fileName) {
     const mime = (entity.mime || '').toLowerCase();
 
@@ -236,10 +248,12 @@ module.exports = {
     fileContentProvider,
     downloadFile,
     downloadNoteInt,
+    getNoteDownloadInfo,
     saveNoteToTmpDir,
     openAttachment,
     openAttachmentPartial,
     downloadAttachment,
+    getAttachmentDownloadInfo,
     saveAttachmentToTmpDir,
     attachmentContentProvider,
     uploadModifiedFileToNote,

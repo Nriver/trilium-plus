@@ -141,6 +141,7 @@ function register(app) {
     route(GET, '/api/notes/:noteId/open', [auth.checkApiAuthOrElectron], filesRoute.openFile);
     route(GET, '/api/notes/:noteId/open-partial', [auth.checkApiAuthOrElectron], filesRoute.openNotePartial);
     route(GET, '/api/notes/:noteId/download', [auth.checkApiAuthOrElectron], filesRoute.downloadFile);
+    apiRoute(GET, '/api/notes/:noteId/download-info', filesRoute.getNoteDownloadInfo);
     // this "hacky" path is used for easier referencing of CSS resources
     route(GET, '/api/notes/download/:noteId', [auth.checkApiAuthOrElectron], filesRoute.downloadFile);
     apiRoute(PST, '/api/notes/:noteId/save-to-tmp-dir', filesRoute.saveNoteToTmpDir);
@@ -168,6 +169,7 @@ function register(app) {
     route(GET, '/api/attachments/:attachmentId/open', [auth.checkApiAuthOrElectron], filesRoute.openAttachment);
     route(GET, '/api/attachments/:attachmentId/open-partial', [auth.checkApiAuthOrElectron], filesRoute.openAttachmentPartial);
     route(GET, '/api/attachments/:attachmentId/download', [auth.checkApiAuthOrElectron], filesRoute.downloadAttachment);
+    apiRoute(GET, '/api/attachments/:attachmentId/download-info', filesRoute.getAttachmentDownloadInfo);
     // this "hacky" path is used for easier referencing of CSS resources
     route(GET, '/api/attachments/download/:attachmentId', [auth.checkApiAuthOrElectron], filesRoute.downloadAttachment);
     apiRoute(PST, '/api/attachments/:attachmentId/save-to-tmp-dir', filesRoute.saveAttachmentToTmpDir);

@@ -145,10 +145,10 @@ function sanitizeFilenameForHeader(filename) {
     return encodeURIComponent(sanitizedFilename);
 }
 
-function getContentDisposition(filename) {
+function getContentDisposition(filename, disposition = 'attachment') {
     const sanitizedFilename = sanitizeFilenameForHeader(filename);
 
-    return `file; filename="${sanitizedFilename}"; filename*=UTF-8''${sanitizedFilename}`;
+    return `${disposition}; filename="${sanitizedFilename}"; filename*=UTF-8''${sanitizedFilename}`;
 }
 
 const STRING_MIME_TYPES = [

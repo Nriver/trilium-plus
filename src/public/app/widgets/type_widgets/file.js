@@ -33,6 +33,10 @@ const TPL = `
             object-fit: contain;
             background-color: black;
         }
+
+        .video-preview::-webkit-media-controls-download-button {
+            display: none;
+        }
     </style>
     
     <pre class="file-preview-content"></pre>
@@ -43,7 +47,7 @@ const TPL = `
     
     <iframe class="pdf-preview" style="width: 100%; height: 100%; flex-grow: 100%;"></iframe>
     
-    <video class="video-preview" controls preload="metadata" playsinline></video>
+    <video class="video-preview" controls controlsList="nodownload" preload="metadata" playsinline></video>
     
     <audio class="audio-preview" controls preload="metadata"></audio>
 </div>`;

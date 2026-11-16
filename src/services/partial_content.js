@@ -1,6 +1,7 @@
 "use strict";
 
 const { Readable } = require('stream');
+const utils = require('./utils.js');
 
 /**
  * Serves content (typically audio/video) with support for HTTP Range requests,
@@ -11,12 +12,16 @@ const { Readable } = require('stream');
  */
 function createPartialContentHandler(contentProvider) {
     return function handler(req, res) {
-        const { content, totalSize, mimeType } = contentProvider(req);
+        const { content, totalSize, mimeType, fileName } = contentProvider(req);
 
         res.setHeader('Content-Type', mimeType || 'application/octet-stream');
         res.setHeader('Accept-Ranges', 'bytes');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('X-Content-Type-Options', 'nosniff');
+
+        if (fileName) {
+            res.setHeader('Content-Disposition', utils.getContentDisposition(fileName, 'inline'));
+        }
 
         if (!totalSize) {
             res.setHeader('Content-Length', 0);

@@ -29,13 +29,31 @@ function download(url) {
     }
 }
 
-function downloadFileNote(noteId) {
+async function confirmDownload(fileName) {
+    const { default: dialogService } = await import('./dialog.js');
+
+    return await dialogService.confirm(`Download "${fileName}"?`);
+}
+
+async function downloadFileNote(noteId) {
+    const { fileName } = await server.get(`notes/${noteId}/download-info`);
+
+    if (!await confirmDownload(fileName)) {
+        return;
+    }
+
     const url = `${getFileUrl('notes', noteId)}?${Date.now()}`; // don't use cache
 
     download(url);
 }
 
-function downloadAttachment(attachmentId) {
+async function downloadAttachment(attachmentId) {
+    const { fileName } = await server.get(`attachments/${attachmentId}/download-info`);
+
+    if (!await confirmDownload(fileName)) {
+        return;
+    }
+
     const url = `${getFileUrl('attachments', attachmentId)}?${Date.now()}`; // don't use cache
 
     download(url);
