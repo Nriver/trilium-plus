@@ -2,6 +2,10 @@ ul.fancytree-container {
     padding-left: 0;
 }
 
+.tree::-webkit-scrollbar {
+    height: 12px;
+}
+
 ul.fancytree-container li {
     list-style: none;
 }
@@ -37,7 +41,8 @@ span.fancytree-node.fancytree-hide {
     border: 1px solid transparent;
     border-radius: 5px;
     cursor: pointer;
-    overflow: hidden;
+    /* needs to stay visible so the sticky action buttons can escape the node box when the tree is scrolled horizontally */
+    overflow: visible;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -125,6 +130,9 @@ span.fancytree-node.muted { opacity: 0.6; }
 ul.fancytree-container {
     outline: none;
     background-color: inherit;
+    /* let deep nesting widen the content so the tree can be scrolled horizontally */
+    width: max-content;
+    min-width: 100%;
 }
 
 .fancytree-custom-icon {
@@ -208,6 +216,21 @@ span.fancytree-node.archived {
 
 .fancytree-node:hover .bx.tree-item-button {
     display: inline-block;
+}
+
+/* keeps the action buttons (e.g. "add child note") inside the visible part of the tree
+   even when the content is wider than the pane and scrolled horizontally */
+.tree-item-buttons {
+    position: sticky;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    background-color: var(--left-pane-background-color);
+}
+
+span.fancytree-active .tree-item-buttons {
+    background-color: var(--active-item-background-color);
 }
 
 .bx.tree-item-button {

@@ -34,7 +34,8 @@ const TPL = `
     
     .tree {
         height: 100%;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: scroll;
         padding-bottom: 35px;
         padding-top: 5px;
     }
@@ -540,7 +541,9 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
 
                 const $span = $(node.span);
 
-                $span.find('.tree-item-button').remove();
+                $span.find('.tree-item-buttons').remove();
+
+                const $buttons = $('<span class="tree-item-buttons"></span>');
 
                 const isHoistedNote = activeNoteContext && activeNoteContext.hoistedNoteId === note.noteId && note.noteId !== 'root';
 
@@ -548,29 +551,31 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
                     const $enterWorkspaceButton = $('<span class="tree-item-button enter-workspace-button bx bx-door-open" title="Hoist this note (workspace)"></span>')
                         .on("click", cancelClickPropagation);
 
-                    $span.append($enterWorkspaceButton);
+                    $buttons.append($enterWorkspaceButton);
                 }
 
                 if (note.type === 'search') {
                     const $refreshSearchButton = $('<span class="tree-item-button refresh-search-button bx bx-refresh" title="Refresh saved search results"></span>')
                         .on("click", cancelClickPropagation);
 
-                    $span.append($refreshSearchButton);
+                    $buttons.append($refreshSearchButton);
                 }
 
                 if (!['search', 'launcher'].includes(note.type) && !note.isOptions() && !note.isLaunchBarConfig()) {
                     const $createChildNoteButton = $('<span class="tree-item-button add-note-button bx bx-plus" title="Create child note"></span>')
                         .on("click", cancelClickPropagation);
 
-                    $span.append($createChildNoteButton);
+                    $buttons.append($createChildNoteButton);
                 }
 
                 if (isHoistedNote) {
                     const $unhoistButton = $('<span class="tree-item-button unhoist-button bx bx-door-open" title="Unhoist"></span>')
                         .on("click", cancelClickPropagation);
 
-                    $span.append($unhoistButton);
+                    $buttons.append($unhoistButton);
                 }
+
+                $span.append($buttons);
             },
             // this is done to automatically lazy load all expanded notes after tree load
             loadChildren: (event, data) => {

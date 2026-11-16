@@ -63,6 +63,10 @@ const FANCYTREE_CSS = `
     padding-left: 10px;
 }
 
+.tree-item-buttons {
+    background-color: var(--main-background-color);
+}
+
 .fancytree-custom-icon {
     font-size: 2em;
 }
