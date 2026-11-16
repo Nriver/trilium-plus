@@ -246,7 +246,10 @@ async function openDialog($dialog, closeActDialog = true) {
     $dialog.modal();
 
     $dialog.on('hidden.bs.modal', () => {
-        $(".aa-input").autocomplete("close");
+        // autocomplete library is not loaded on mobile
+        if ($.fn.autocomplete) {
+            $(".aa-input").autocomplete("close");
+        }
 
         if (!glob.activeDialog || glob.activeDialog === $dialog) {
             focusSavedElement();

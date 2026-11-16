@@ -8,6 +8,7 @@ import MobileDetailMenuWidget from "../widgets/mobile_widgets/mobile_detail_menu
 import ScreenContainer from "../widgets/mobile_widgets/screen_container.js";
 import ScrollingContainer from "../widgets/containers/scrolling_container.js";
 import ProtectedSessionPasswordDialog from "../widgets/dialogs/protected_session_password.js";
+import DeleteNotesDialog from "../widgets/dialogs/delete_notes.js";
 import ConfirmDialog from "../widgets/dialogs/confirm.js";
 import PromptDialog from "../widgets/dialogs/prompt.js";
 import FilePropertiesWidget from "../widgets/ribbon_widgets/file_properties.js";
@@ -170,6 +171,7 @@ export default class MobileLayout {
                     )
                 )
                 .child(new ProtectedSessionPasswordDialog())
+                .child(new DeleteNotesDialog())
                 .child(new ConfirmDialog())
                 .child(new PromptDialog())
             );
