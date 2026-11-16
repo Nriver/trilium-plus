@@ -6,11 +6,12 @@ const log = require('../../services/log.js');
 const noteService = require('../../services/notes.js');
 const tmp = require('tmp');
 const fs = require('fs');
-const { Readable } = require('stream');
 const chokidar = require('chokidar');
 const ws = require('../../services/ws.js');
 const becca = require('../../becca/becca.js');
 const ValidationError = require('../../errors/validation_error.js');
+const mimeService = require('../../services/import/mime.js');
+const { createPartialContentHandler } = require('../../services/partial_content.js');
 
 function updateFile(req) {
     const note = becca.getNoteOrThrow(req.params.noteId);
@@ -18,7 +19,7 @@ function updateFile(req) {
     const file = req.file;
     note.saveRevision();
 
-    note.mime = file.mimetype.toLowerCase();
+    note.mime = mimeService.getMime(file.originalname) || (file.mimetype || '').toLowerCase();
     note.save();
 
     note.setContent(file.buffer);
@@ -38,7 +39,7 @@ function updateAttachment(req) {
 
     attachment.getNote().saveRevision();
 
-    attachment.mime = file.mimetype.toLowerCase();
+    attachment.mime = mimeService.getMime(file.originalname) || (file.mimetype || '').toLowerCase();
     attachment.setContent(file.buffer, {forceSave: true});
 
     return {
@@ -98,43 +99,45 @@ const openFile = (req, res) => downloadNoteInt(req.params.noteId, res, false);
 const downloadAttachment = (req, res) => downloadAttachmentInt(req.params.attachmentId, res, true);
 const openAttachment = (req, res) => downloadAttachmentInt(req.params.attachmentId, res, false);
 
+function getContentMimeType(entity, fileName) {
+    const mime = (entity.mime || '').toLowerCase();
+
+    if (mime && mime !== 'application/octet-stream') {
+        return mime;
+    }
+
+    return mimeService.getMime(fileName) || mime;
+}
+
 function fileContentProvider(req) {
     // Read the file name from route params.
     const note = becca.getNoteOrThrow(req.params.noteId);
+    const fileName = note.getFileName();
 
-    return streamContent(note.getContent(), note.getFileName(), note.mime);
+    return streamContent(note.getContent(), fileName, getContentMimeType(note, fileName));
 }
 
 function attachmentContentProvider(req) {
     // Read the file name from route params.
     const attachment = becca.getAttachmentOrThrow(req.params.attachmentId);
+    const fileName = attachment.getFileName();
 
-    return streamContent(attachment.getContent(), attachment.getFileName(), attachment.mime);
+    return streamContent(attachment.getContent(), fileName, getContentMimeType(attachment, fileName));
 }
+
+const openNotePartial = createPartialContentHandler(fileContentProvider);
+const openAttachmentPartial = createPartialContentHandler(attachmentContentProvider);
 
 function streamContent(content, fileName, mimeType) {
     if (typeof content === "string") {
         content = Buffer.from(content, 'utf8');
     }
 
-    const totalSize = content.byteLength;
-
-    const getStream = range => {
-        if (!range) {
-            // Request if for complete content.
-            return Readable.from(content);
-        }
-        // Partial content request.
-        const {start, end} = range;
-
-        return Readable.from(content.slice(start, end + 1));
-    }
-
     return {
         fileName,
-        totalSize,
-        mimeType,
-        getStream
+        content,
+        totalSize: content.byteLength,
+        mimeType
     };
 }
 
@@ -229,11 +232,13 @@ module.exports = {
     updateFile,
     updateAttachment,
     openFile,
+    openNotePartial,
     fileContentProvider,
     downloadFile,
     downloadNoteInt,
     saveNoteToTmpDir,
     openAttachment,
+    openAttachmentPartial,
     downloadAttachment,
     saveAttachmentToTmpDir,
     attachmentContentProvider,

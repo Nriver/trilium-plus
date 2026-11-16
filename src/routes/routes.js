@@ -10,7 +10,6 @@ const cls = require('../services/cls.js');
 const sql = require('../services/sql.js');
 const entityChangesService = require('../services/entity_changes.js');
 const csurf = require('csurf');
-const { createPartialContentHandler } = require("express-partial-content");
 const rateLimit = require("express-rate-limit");
 const AbstractBeccaEntity = require('../becca/entities/abstract_becca_entity.js');
 const NotFoundError = require('../errors/not_found_error.js');
@@ -140,10 +139,7 @@ function register(app) {
     route(PUT, '/api/notes/:noteId/file', [auth.checkApiAuthOrElectron, uploadMiddlewareWithErrorHandling, csrfMiddleware],
         filesRoute.updateFile, apiResultHandler);
     route(GET, '/api/notes/:noteId/open', [auth.checkApiAuthOrElectron], filesRoute.openFile);
-    route(GET, '/api/notes/:noteId/open-partial', [auth.checkApiAuthOrElectron],
-        createPartialContentHandler(filesRoute.fileContentProvider, {
-            debug: (string, extra) => { console.log(string, extra); }
-        }));
+    route(GET, '/api/notes/:noteId/open-partial', [auth.checkApiAuthOrElectron], filesRoute.openNotePartial);
     route(GET, '/api/notes/:noteId/download', [auth.checkApiAuthOrElectron], filesRoute.downloadFile);
     // this "hacky" path is used for easier referencing of CSS resources
     route(GET, '/api/notes/download/:noteId', [auth.checkApiAuthOrElectron], filesRoute.downloadFile);
@@ -170,10 +166,7 @@ function register(app) {
     apiRoute(GET, '/api/attachments/:attachmentId/blob', attachmentsApiRoute.getAttachmentBlob);
     route(GET, '/api/attachments/:attachmentId/image/:filename', [auth.checkApiAuthOrElectron], imageRoute.returnAttachedImage);
     route(GET, '/api/attachments/:attachmentId/open', [auth.checkApiAuthOrElectron], filesRoute.openAttachment);
-    route(GET, '/api/attachments/:attachmentId/open-partial', [auth.checkApiAuthOrElectron],
-        createPartialContentHandler(filesRoute.attachmentContentProvider, {
-            debug: (string, extra) => { console.log(string, extra); }
-        }));
+    route(GET, '/api/attachments/:attachmentId/open-partial', [auth.checkApiAuthOrElectron], filesRoute.openAttachmentPartial);
     route(GET, '/api/attachments/:attachmentId/download', [auth.checkApiAuthOrElectron], filesRoute.downloadAttachment);
     // this "hacky" path is used for easier referencing of CSS resources
     route(GET, '/api/attachments/download/:attachmentId', [auth.checkApiAuthOrElectron], filesRoute.downloadAttachment);

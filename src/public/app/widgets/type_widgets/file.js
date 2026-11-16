@@ -1,4 +1,5 @@
 import openService from "../../services/open.js";
+import utils from "../../services/utils.js";
 import TypeWidget from "./type_widget.js";
 
 const TPL = `
@@ -20,6 +21,18 @@ const TPL = `
             overflow: auto;
             margin: 10px;
         }
+
+        .video-preview, .audio-preview {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .video-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: black;
+        }
     </style>
     
     <pre class="file-preview-content"></pre>
@@ -28,11 +41,11 @@ const TPL = `
         File preview is not available for this file format.
     </div>
     
-    <iframe class="pdf-preview" style="width: 100%; height: 100%; flex-grow: 100;"></iframe>
+    <iframe class="pdf-preview" style="width: 100%; height: 100%; flex-grow: 100%;"></iframe>
     
-    <video class="video-preview" controls></video>
+    <video class="video-preview" controls preload="metadata" playsinline></video>
     
-    <audio class="audio-preview" controls></audio>
+    <audio class="audio-preview" controls preload="metadata"></audio>
 </div>`;
 
 export default class FileTypeWidget extends TypeWidget {
@@ -53,33 +66,36 @@ export default class FileTypeWidget extends TypeWidget {
         this.$widget.show();
 
         const blob = await this.note.getBlob();
+        const mime = utils.getEntityMime(note);
 
         this.$previewContent.empty().hide();
         this.$pdfPreview.attr('src', '').empty().hide();
         this.$previewNotAvailable.hide();
-        this.$videoPreview.hide();
-        this.$audioPreview.hide();
+        this.$videoPreview.get(0)?.pause();
+        this.$videoPreview.removeAttr('src').hide();
+        this.$videoPreview.get(0)?.load();
+        this.$audioPreview.get(0)?.pause();
+        this.$audioPreview.removeAttr('src').hide();
+        this.$audioPreview.get(0)?.load();
 
         if (blob.content) {
             this.$previewContent.show().scrollTop(0);
             this.$previewContent.text(blob.content);
         }
-        else if (note.mime === 'application/pdf') {
+        else if (mime === 'application/pdf') {
             this.$pdfPreview.show().attr("src", openService.getUrlForDownload(`api/notes/${this.noteId}/open`));
         }
-        else if (note.mime.startsWith('video/')) {
+        else if (mime.startsWith('video/')) {
             this.$videoPreview
-                .show()
                 .attr("src", openService.getUrlForDownload(`api/notes/${this.noteId}/open-partial`))
-                .attr("type", this.note.mime)
-                .css("width", this.$widget.width());
+                .attr("type", mime)
+                .show();
         }
-        else if (note.mime.startsWith('audio/')) {
+        else if (mime.startsWith('audio/')) {
             this.$audioPreview
-                .show()
                 .attr("src", openService.getUrlForDownload(`api/notes/${this.noteId}/open-partial`))
-                .attr("type", this.note.mime)
-                .css("width", this.$widget.width());
+                .attr("type", mime)
+                .show();
         }
         else {
             this.$previewNotAvailable.show();

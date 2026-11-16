@@ -167,6 +167,7 @@ function renderFile(entity, type, $renderedContent) {
     }
 
     const $content = $('<div style="display: flex; flex-direction: column; height: 100%;">');
+    const mime = utils.getEntityMime(entity);
 
     if (type === 'pdf') {
         const $pdfPreview = $('<iframe class="pdf-preview" style="width: 100%; flex-grow: 100;"></iframe>');
@@ -174,16 +175,16 @@ function renderFile(entity, type, $renderedContent) {
 
         $content.append($pdfPreview);
     } else if (type === 'audio') {
-        const $audioPreview = $('<audio controls></audio>')
+        const $audioPreview = $('<audio controls preload="metadata"></audio>')
             .attr("src", openService.getUrlForDownload(`api/${entityType}/${entityId}/open-partial`))
-            .attr("type", entity.mime)
+            .attr("type", mime)
             .css("width", "100%");
 
         $content.append($audioPreview);
     } else if (type === 'video') {
-        const $videoPreview = $('<video controls></video>')
+        const $videoPreview = $('<video controls preload="metadata" playsinline></video>')
             .attr("src", openService.getUrlForDownload(`api/${entityType}/${entityId}/open-partial`))
-            .attr("type", entity.mime)
+            .attr("type", mime)
             .css("width", "100%");
 
         $content.append($videoPreview);
@@ -196,7 +197,7 @@ function renderFile(entity, type, $renderedContent) {
         const $openButton = $('<button class="file-open btn btn-primary" type="button">Open</button>');
 
         $downloadButton.on('click', () => openService.downloadFileNote(entity.noteId));
-        $openButton.on('click', () => openService.openNoteExternally(entity.noteId, entity.mime));
+        $openButton.on('click', () => openService.openNoteExternally(entity.noteId, mime));
         // open doesn't work for protected notes since it works through a browser which isn't in protected session
         $openButton.toggle(!entity.isProtected);
 
@@ -266,7 +267,7 @@ async function renderChildrenList($renderedContent, note) {
 
 function getRenderingType(entity) {
     let type = entity.type || entity.role;
-    const mime = entity.mime;
+    const mime = utils.getEntityMime(entity);
 
     if (type === 'file' && mime === 'application/pdf') {
         type = 'pdf';

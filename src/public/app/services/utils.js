@@ -196,6 +196,52 @@ function getMimeTypeClass(mime) {
     return `mime-${mime.toLowerCase().replace(/[\W_]+/g, "-")}`;
 }
 
+const MIME_BY_EXTENSION = {
+    "mp4": "video/mp4",
+    "m4v": "video/x-m4v",
+    "webm": "video/webm",
+    "ogv": "video/ogg",
+    "mov": "video/quicktime",
+    "mkv": "video/x-matroska",
+    "avi": "video/x-msvideo",
+    "flv": "video/x-flv",
+    "wmv": "video/x-ms-wmv",
+    "mpg": "video/mpeg",
+    "mpeg": "video/mpeg",
+    "3gp": "video/3gpp",
+    "ts": "video/mp2t",
+    "mp3": "audio/mpeg",
+    "wav": "audio/wav",
+    "oga": "audio/ogg",
+    "ogg": "audio/ogg",
+    "m4a": "audio/mp4",
+    "aac": "audio/aac",
+    "flac": "audio/flac",
+    "opus": "audio/opus",
+    "weba": "audio/webm",
+    "wma": "audio/x-ms-wma"
+};
+
+function getMimeForFileName(fileName) {
+    if (!fileName || !fileName.includes(".")) {
+        return null;
+    }
+
+    const extension = fileName.split(".").pop().toLowerCase();
+
+    return MIME_BY_EXTENSION[extension] || null;
+}
+
+function getEntityMime(entity) {
+    const mime = (entity.mime || "").toLowerCase();
+
+    if (mime && mime !== "application/octet-stream") {
+        return mime;
+    }
+
+    return getMimeForFileName(entity.title) || mime;
+}
+
 function closeActiveDialog() {
     if (glob.activeDialog) {
         glob.activeDialog.modal('hide');
@@ -529,6 +575,8 @@ export default {
     setCookie,
     getNoteTypeClass,
     getMimeTypeClass,
+    getMimeForFileName,
+    getEntityMime,
     closeActiveDialog,
     openDialog,
     saveFocusedElement,

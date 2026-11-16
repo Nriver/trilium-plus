@@ -2,6 +2,7 @@ const becca = require('../../becca/becca.js');
 const blobService = require('../../services/blob.js');
 const ValidationError = require('../../errors/validation_error.js');
 const imageService = require("../../services/image.js");
+const mimeService = require('../../services/import/mime.js');
 
 function getAttachmentBlob(req) {
     const preview = req.query.preview === 'true';
@@ -43,15 +44,16 @@ function uploadAttachment(req) {
     const {file} = req;
 
     const note = becca.getNoteOrThrow(noteId);
+    const mime = mimeService.getMime(file.originalname) || (file.mimetype || '').toLowerCase();
     let url;
 
-    if (["image/png", "image/jpg", "image/jpeg", "image/gif", "image/webp", "image/svg+xml"].includes(file.mimetype)) {
+    if (["image/png", "image/jpg", "image/jpeg", "image/gif", "image/webp", "image/svg+xml"].includes(mime)) {
         const attachment = imageService.saveImageToAttachment(noteId, file.buffer, file.originalname, true, true);
         url = `api/attachments/${attachment.attachmentId}/image/${encodeURIComponent(attachment.title)}`;
     } else {
         const attachment = note.saveAttachment({
             role: 'file',
-            mime: file.mimetype,
+            mime,
             title: file.originalname,
             content: file.buffer
         });
