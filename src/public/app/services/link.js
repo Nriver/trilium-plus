@@ -256,6 +256,12 @@ function goToLinkExt(evt, hrefLink, $link) {
                 const electron = utils.dynamicRequire('electron');
 
                 electron.shell.openPath(hrefLink);
+            } else if (hrefLink.toLowerCase().startsWith('trilium://')) {
+                if (utils.isElectron()) {
+                    window.location.href = hrefLink;
+                } else {
+                    window.open(hrefLink, '_blank');
+                }
             }
         }
     }

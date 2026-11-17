@@ -7,6 +7,7 @@ const log = require('./log.js');
 const sqlInit = require('./sql_init.js');
 const cls = require('./cls.js');
 const keyboardActionsService = require('./keyboard_actions.js');
+const desktopProtocol = require('./desktop_protocol.js');
 const {ipcMain} = require('electron');
 
 // Prevent the window being garbage collected
@@ -105,6 +106,18 @@ function configureWebContents(webContents, spellcheckEnabled) {
 
     // prevent drag & drop to navigate away from trilium
     webContents.on('will-navigate', (ev, targetUrl) => {
+        if (desktopProtocol.isDeepLink(targetUrl)) {
+            ev.preventDefault();
+
+            const hash = desktopProtocol.parseDeepLink(targetUrl);
+
+            if (hash) {
+                openDeepLink(hash);
+            }
+
+            return;
+        }
+
         const parsedUrl = url.parse(targetUrl);
 
         // we still need to allow internal redirects from setup and migration pages
@@ -125,6 +138,34 @@ function configureWebContents(webContents, spellcheckEnabled) {
 
 function getIcon() {
     return path.join(__dirname, '../../images/app-icons/png/256x256' + (env.isDev() ? '-dev' : '') + '.png');
+}
+
+function openDeepLink(hash) {
+    if (!mainWindow || mainWindow.isDestroyed()) {
+        return false;
+    }
+
+    if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+    }
+
+    mainWindow.show();
+    mainWindow.focus();
+
+    const send = () => {
+        if (!mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('open-deep-link', { hash });
+        }
+    };
+
+    if (mainWindow.webContents.isLoading()) {
+        mainWindow.webContents.once('did-finish-load', send);
+    }
+    else {
+        send();
+    }
+
+    return true;
 }
 
 async function createSetupWindow() {
@@ -195,5 +236,6 @@ module.exports = {
     createSetupWindow,
     closeSetupWindow,
     registerGlobalShortcuts,
-    getMainWindow
+    getMainWindow,
+    openDeepLink
 };

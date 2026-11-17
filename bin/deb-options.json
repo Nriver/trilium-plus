@@ -11,5 +11,6 @@
   "homepage": "https://github.com/nriver/trilium-plus",
   "bin": "trilium",
   "icon": "dist/trilium-linux-x64/icon.png",
-  "categories": [ "Office" ]
+  "categories": [ "Office" ],
+  "mimeType": [ "x-scheme-handler/trilium" ]
 }

@@ -5,9 +5,68 @@ const sqlInit = require('./src/services/sql_init.js');
 const appIconService = require('./src/services/app_icon.js');
 const windowService = require('./src/services/window.js');
 const tray = require('./src/services/tray.js');
+const desktopProtocol = require('./src/services/desktop_protocol.js');
 
 // Adds debug features like hotkeys for triggering dev tools and reload
 require('electron-debug')();
+
+const pendingDeepLinks = [];
+let deepLinkHandlerReady = false;
+
+function openDeepLink(hash) {
+    if (!windowService.openDeepLink(hash)) {
+        pendingDeepLinks.push(hash);
+    }
+}
+
+function queueDeepLink(url) {
+    const hash = desktopProtocol.parseDeepLink(url);
+
+    if (!hash) {
+        return;
+    }
+
+    if (deepLinkHandlerReady) {
+        openDeepLink(hash);
+    }
+    else {
+        pendingDeepLinks.push(hash);
+    }
+}
+
+function flushPendingDeepLinks() {
+    deepLinkHandlerReady = true;
+
+    while (pendingDeepLinks.length > 0) {
+        const hash = pendingDeepLinks.shift();
+
+        if (!windowService.openDeepLink(hash)) {
+            pendingDeepLinks.unshift(hash);
+            break;
+        }
+    }
+}
+
+// macOS delivers URL scheme activations through this event, including at startup.
+app.on('open-url', (event, url) => {
+    event.preventDefault();
+    queueDeepLink(url);
+});
+
+// Windows/Linux deliver the URL as a command line argument to the new process.
+app.on('second-instance', (event, commandLine) => {
+    const deepLink = desktopProtocol.findDeepLink(commandLine);
+
+    if (deepLink) {
+        queueDeepLink(deepLink);
+    }
+});
+
+const initialDeepLink = desktopProtocol.findDeepLink(process.argv);
+
+if (initialDeepLink) {
+    queueDeepLink(initialDeepLink);
+}
 
 appIconService.installLocalAppIcon();
 
@@ -28,12 +87,16 @@ app.on('window-all-closed', () => {
 app.on('ready', async () => {
 //    app.setAppUserModelId('com.github.zadam.trilium');
 
+    desktopProtocol.register(app);
+
     // if db is not initialized -> setup process
     // if db is initialized, then we need to wait until the migration process is finished
     if (sqlInit.isDbInitialized()) {
         await sqlInit.dbReady;
 
         await windowService.createMainWindow(app);
+
+        flushPendingDeepLinks();
 
         if (process.platform === 'darwin') {
             app.on('activate', async () => {

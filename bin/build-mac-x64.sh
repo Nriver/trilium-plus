@@ -20,7 +20,7 @@ mkdir -p "$ELECTRON_CACHE_DIR"
 
 echo "Packaging mac x64 electron build"
 
-./node_modules/.bin/electron-packager $SRC_DIR --asar --out=dist --executable-name=trilium --platform=darwin --arch=x64 --overwrite --icon=images/app-icons/mac/icon.icns --electron-version="$ELECTRON_VERSION" --download.cacheRoot="$ELECTRON_CACHE_DIR"
+./node_modules/.bin/electron-packager $SRC_DIR --asar --out=dist --executable-name=trilium --platform=darwin --arch=x64 --overwrite --icon=images/app-icons/mac/icon.icns --electron-version="$ELECTRON_VERSION" --download.cacheRoot="$ELECTRON_CACHE_DIR" --extend-info=bin/tpl/info.plist
 
 BUILD_DIR=./dist/trilium-mac-x64
 rm -rf $BUILD_DIR
