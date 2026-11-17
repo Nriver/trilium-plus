@@ -78,6 +78,7 @@ export default class TreeContextMenu {
             { title: "----" },
             { title: 'Copy / clone <kbd data-command="copyNotesToClipboard"></kbd>', command: "copyNotesToClipboard", uiIcon: "bx bx-copy",
                 enabled: isNotRoot && !isHoisted },
+            { title: 'Copy deep link to clipboard', command: "copyDeepLinkToClipboard", uiIcon: "bx bx-link", enabled: true },
             { title: 'Clone to ... <kbd data-command="cloneNotesTo"></kbd>', command: "cloneNotesTo", uiIcon: "bx bx-empty",
                 enabled: isNotRoot && !isHoisted },
             { title: 'Cut <kbd data-command="cutNotesToClipboard"></kbd>', command: "cutNotesToClipboard", uiIcon: "bx bx-cut",
@@ -156,6 +157,10 @@ export default class TreeContextMenu {
         }
         else if (command === 'copyNotePathToClipboard') {
             navigator.clipboard.writeText('#' + notePath);
+        }
+        else if (command === 'copyDeepLinkToClipboard') {
+            await navigator.clipboard.writeText(`trilium://note/${this.node.data.noteId}`);
+            toastService.showMessage("Deep link copied to clipboard");
         }
         else {
             this.treeWidget.triggerCommand(command, {
