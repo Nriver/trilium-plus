@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-NODE_VERSION="${NODE_VERSION:-24.22.1}"
+NODE_VERSION="${NODE_VERSION:-24.22.3}"
 export NODE_VERSION
 
 if [ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]; then

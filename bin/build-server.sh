@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 . bin/lib/build-cache.sh
 
 PKG_DIR=dist/trilium-linux-x64-server
-NODE_VERSION="${NODE_VERSION:-24.22.1}"
+NODE_VERSION="${NODE_VERSION:-24.22.3}"
 export NODE_VERSION
 
 if [ "${1:-}" != "DONTCOPY" ]
