@@ -40,8 +40,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create server-package.json
-        run: cat package.json | grep -v electron > server-package.json
       - name: Build and Push
         uses: docker/build-push-action@v2.7.0
         with:

@@ -7,7 +7,8 @@ WORKDIR /usr/src/app
 # Bundle app source
 COPY . .
 
-COPY server-package.json package.json
+# Avoid downloading the Electron binary, it is not needed for the server build
+ENV ELECTRON_SKIP_BINARY_DOWNLOAD=1
 
 # Install app dependencies
 RUN set -x \
@@ -21,10 +22,11 @@ RUN set -x \
         nasm \
         libpng-dev \
         python3 \
-    && npm install \
+    && npm install -g pnpm@11.28.4 \
+    && pnpm install --frozen-lockfile \
     && apk del .build-dependencies \
-    && npm run webpack \
-    && npm prune --omit=dev \
+    && pnpm run webpack \
+    && pnpm prune --prod \
     && test -s src/public/app-dist/excalidraw.js \
     && test -s node_modules/@excalidraw/excalidraw/dist/prod/index.css \
     && cp src/public/app/share.js src/public/app-dist/. \

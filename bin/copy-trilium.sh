@@ -20,7 +20,7 @@ echo "Node version: $(node -v)"
 require_file() {
     if [[ ! -s "$1" ]]; then
         echo "ERROR: Missing required build artifact: $1" >&2
-        echo "The packaged application would be incomplete. Run 'npm install' and 'npm run webpack', then try again." >&2
+        echo "The packaged application would be incomplete. Run 'pnpm install' and 'pnpm run webpack', then try again." >&2
         exit 1
     fi
 }
@@ -29,12 +29,12 @@ if [[ $# -eq 0 ]] ; then
     echo "Missing argument of target directory"
     exit 1
 fi
-if ! [[ $(which npm) ]]; then
-    echo "Missing npm"
+if ! command -v pnpm > /dev/null 2>&1; then
+    echo "Missing pnpm"
     exit 1
 fi
 
-npm run webpack
+pnpm run webpack
 
 require_file "src/public/app-dist/desktop.js"
 require_file "src/public/app-dist/excalidraw.js"
@@ -50,7 +50,7 @@ echo "Copying Trilium to build directory $DIR"
 for d in 'images' 'libraries' 'src' 'db'; do
     cp -r "$d" "$DIR"/
 done
-for f in 'package.json' 'package-lock.json' 'README.md' 'LICENSE' 'config-sample.ini' 'electron.js'; do
+for f in 'package.json' 'pnpm-lock.yaml' 'pnpm-workspace.yaml' 'README.md' 'LICENSE' 'config-sample.ini' 'electron.js'; do
     cp "$f" "$DIR"/
 done
 for f in webpack-*; do
@@ -60,7 +60,7 @@ for f in webpack-*; do
 done
 
 # run in subshell (so we return to original dir)
-(cd "$DIR" && npm install --omit=dev --no-audit --no-fund)
+(cd "$DIR" && pnpm install --prod --frozen-lockfile --node-linker=hoisted)
 
 node -e '
 const fs = require("fs");
