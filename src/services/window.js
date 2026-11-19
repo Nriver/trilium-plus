@@ -53,7 +53,7 @@ ipcMain.on('create-extra-window', (event, arg) => {
     createExtraWindow(arg.extraWindowHash);
 });
 
-async function createMainWindow(app) {
+async function createMainWindow(app, startHidden = false) {
     const windowStateKeeper = require('electron-window-state'); // should not be statically imported
 
     const mainWindowState = windowStateKeeper({
@@ -72,6 +72,9 @@ async function createMainWindow(app) {
         width: mainWindowState.width,
         height: mainWindowState.height,
         title: 'Trilium Notes',
+        // Start hidden when "start to tray" is enabled, so no window flashes
+        // before the user opens it from the tray.
+        show: !startHidden,
         webPreferences: {
             enableRemoteModule: true,
             nodeIntegration: true,

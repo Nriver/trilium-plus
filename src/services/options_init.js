@@ -87,6 +87,7 @@ const defaultOptions = [
     { name: 'checkForUpdates', value: 'true', isSynced: true },
     { name: 'disableTray', value: 'false', isSynced: false },
     { name: 'closeToTray', value: 'false', isSynced: false },
+    { name: 'startToTray', value: 'false', isSynced: false },
     { name: 'eraseUnusedAttachmentsAfterSeconds', value: '2592000', isSynced: true },
     { name: 'customSearchEngineName', value: 'DuckDuckGo', isSynced: true },
     { name: 'customSearchEngineUrl', value: 'https://duckduckgo.com/?q={keyword}', isSynced: true },

@@ -5,6 +5,7 @@ const sqlInit = require('./src/services/sql_init.js');
 const appIconService = require('./src/services/app_icon.js');
 const windowService = require('./src/services/window.js');
 const tray = require('./src/services/tray.js');
+const optionService = require('./src/services/options.js');
 const desktopProtocol = require('./src/services/desktop_protocol.js');
 
 // Adds debug features like hotkeys for triggering dev tools and reload
@@ -94,7 +95,12 @@ app.on('ready', async () => {
     if (sqlInit.isDbInitialized()) {
         await sqlInit.dbReady;
 
-        await windowService.createMainWindow(app);
+        // Start minimized to the tray only when the tray is actually available,
+        // otherwise the app would have no way to show its window.
+        const startHidden = !optionService.getOptionBool('disableTray')
+            && optionService.getOptionBool('startToTray');
+
+        await windowService.createMainWindow(app, startHidden);
 
         flushPendingDeepLinks();
 
@@ -120,7 +126,7 @@ app.on('ready', async () => {
             });
         }
 
-        tray.createTray();
+        tray.createTray(startHidden);
     }
     else {
         await windowService.createSetupWindow();

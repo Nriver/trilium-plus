@@ -35,8 +35,12 @@ const getIconPath = () => {
         `${iconSize}x${iconSize}.png`
     )
 }
-const registerVisibilityListener = () => {
+const registerVisibilityListener = (startHidden) => {
     const mainWindow = windowService.getMainWindow();
+
+    // The window may have been created hidden ("start to tray"), so seed the
+    // state from the actual window rather than assuming it is visible.
+    isVisible = !startHidden || mainWindow.isVisible();
 
     // They need to be registered before the tray updater is registered
     mainWindow.on('show', () => {
@@ -95,7 +99,7 @@ const changeVisibility = () => {
     }
 }
 
-function createTray() {
+function createTray(startHidden = false) {
     if (optionService.getOptionBool("disableTray")) {
         return;
     }
@@ -104,9 +108,8 @@ function createTray() {
     tray.setToolTip('Trilium Notes')
     // Restore focus
     tray.on('click', changeVisibility)
+    registerVisibilityListener(startHidden);
     updateTrayMenu();
-
-    registerVisibilityListener();
 }
 
 module.exports = {
