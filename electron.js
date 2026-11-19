@@ -103,6 +103,20 @@ app.on('ready', async () => {
                 if (BrowserWindow.getAllWindows().length === 0) {
                     await windowService.createMainWindow(app);
                 }
+                else {
+                    // Close-to-tray may have hidden the window rather than destroying
+                    // it, so a dock-icon click must reveal the existing window.
+                    const mainWindow = windowService.getMainWindow();
+
+                    if (mainWindow) {
+                        if (mainWindow.isMinimized()) {
+                            mainWindow.restore();
+                        }
+
+                        mainWindow.show();
+                        mainWindow.focus();
+                    }
+                }
             });
         }
 
@@ -113,6 +127,12 @@ app.on('ready', async () => {
     }
 
     await windowService.registerGlobalShortcuts();
+});
+
+app.on('before-quit', () => {
+    // Mark a genuine quit so the close-to-tray interceptor lets the window close
+    // for real. Fires for every quit path (Cmd+Q, tray "Quit", app menu, OS shutdown).
+    windowService.markQuitting();
 });
 
 app.on('will-quit', () => {

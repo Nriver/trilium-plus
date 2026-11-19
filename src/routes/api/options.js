@@ -52,6 +52,7 @@ const ALLOWED_OPTIONS = new Set([
     'highlightsList',
     'checkForUpdates',
     'disableTray',
+    'closeToTray',
     'eraseUnusedAttachmentsAfterSeconds',
     'disableTray',
     'customSearchEngineName',

@@ -1,4 +1,4 @@
-const { Menu, Tray } = require('electron');
+const { Menu, Tray, app } = require('electron');
 const path = require('path');
 const windowService = require('./window.js');
 const optionService = require('./options.js');
@@ -73,8 +73,11 @@ const updateTrayMenu = () => {
         {
             label: 'Quit',
             type: 'normal',
+            // Genuinely quit. `app.quit()` triggers `before-quit`, which clears the
+            // close-to-tray interception so the window closes for real instead of
+            // hiding back to the tray. Works on macOS too.
             click: () => {
-                mainWindow.close();
+                app.quit();
             }
         },
     ]);

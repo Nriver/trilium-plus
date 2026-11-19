@@ -16,6 +16,14 @@ let mainWindow;
 /** @type {Electron.BrowserWindow} */
 let setupWindow;
 
+// Set to true once the app is genuinely quitting (via `before-quit`). The
+// close-to-tray interceptor checks this so a real quit isn't turned into a hide.
+let isQuitting = false;
+
+function markQuitting() {
+    isQuitting = true;
+}
+
 async function createExtraWindow(extraWindowHash) {
     const spellcheckEnabled = optionService.getOptionBool('spellCheckEnabled');
 
@@ -79,6 +87,19 @@ async function createMainWindow(app) {
 
     mainWindow.setMenuBarVisibility(false);
     mainWindow.loadURL(`http://127.0.0.1:${port}`);
+
+    // Close-to-tray: when enabled, closing the main window hides it to the tray
+    // instead of quitting. Only intercepts a genuine window close (not an app
+    // quit, which sets `isQuitting` first). Extra windows are unaffected.
+    mainWindow.on('close', (event) => {
+        if (!isQuitting
+            && !optionService.getOptionBool('disableTray')
+            && optionService.getOptionBool('closeToTray')) {
+            event.preventDefault();
+            mainWindow?.hide();
+        }
+    });
+
     mainWindow.on('closed', () => mainWindow = null);
 
     configureWebContents(mainWindow.webContents, spellcheckEnabled);
@@ -91,6 +112,7 @@ async function createMainWindow(app) {
                 mainWindow.restore();
             }
 
+            mainWindow.show();
             mainWindow.focus();
         }
     });
@@ -237,5 +259,6 @@ module.exports = {
     closeSetupWindow,
     registerGlobalShortcuts,
     getMainWindow,
-    openDeepLink
+    openDeepLink,
+    markQuitting
 };
