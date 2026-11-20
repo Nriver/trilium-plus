@@ -2,6 +2,7 @@ import BasicWidget from "./basic_widget.js";
 import ws from "../services/ws.js";
 import options from "../services/options.js";
 import syncService from "../services/sync.js";
+import utils from "../services/utils.js";
 
 const TPL = `
 <div class="sync-status-widget launcher-button">
@@ -86,9 +87,19 @@ export default class SyncStatusWidget extends BasicWidget {
         this.$widget = $(TPL);
         this.$widget.hide();
 
-        this.$widget.find('[data-toggle="tooltip"]').tooltip({
-            html: true
-        });
+        const $tooltipIcons = this.$widget.find('[data-toggle="tooltip"]');
+
+        if (utils.isMobile()) {
+            // Tooltips are intentionally disabled on mobile.
+            $tooltipIcons
+                .removeAttr('data-toggle')
+                .removeAttr('data-placement')
+                .removeAttr('title');
+        } else {
+            $tooltipIcons.tooltip({
+                html: true
+            });
+        }
 
         this.$widget.find('.sync-status-icon:not(.sync-status-in-progress)')
             .on('click', () => syncService.syncNow());
