@@ -42,6 +42,9 @@ VERSION=$(jq -r ".version" package.json)
 
 cd dist
 
-tar cJf "trilium-linux-x64-server-${VERSION}.tar.xz" trilium-linux-x64-server
+# node_modules installed by pnpm contains hard links. Some Android/proot
+# extraction tools don't preserve them, which leaves files like
+# negotiator/lib/charset.js missing. Store every file separately instead.
+tar --hard-dereference -cJf "trilium-linux-x64-server-${VERSION}.tar.xz" trilium-linux-x64-server
 
 echo "Created dist/trilium-linux-x64-server-${VERSION}.tar.xz"
