@@ -81,6 +81,10 @@ export default class SyncStatusWidget extends BasicWidget {
 
         this.syncState = 'unknown';
         this.allChangesPushed = false;
+        this.currentIconClass = null;
+        this.isMobile = utils.isMobile();
+        this.suppressTooltip = false;
+        this.tooltipHideTimeout = null;
     }
 
     doRender() {
@@ -89,7 +93,7 @@ export default class SyncStatusWidget extends BasicWidget {
 
         const $tooltipIcons = this.$widget.find('[data-toggle="tooltip"]');
 
-        if (utils.isMobile()) {
+        if (this.isMobile) {
             // Tooltips are intentionally disabled on mobile.
             $tooltipIcons
                 .removeAttr('data-toggle')
@@ -97,23 +101,77 @@ export default class SyncStatusWidget extends BasicWidget {
                 .removeAttr('title');
         } else {
             $tooltipIcons.tooltip({
-                html: true
+                html: true,
+                trigger: 'manual'
+            });
+
+            $tooltipIcons
+                .on('mouseenter', e => {
+                    if (!this.suppressTooltip) {
+                        $(e.currentTarget).tooltip('show');
+                        this.scheduleTooltipHide();
+                    }
+                })
+                .on('mouseleave', () => this.hideTooltips());
+
+            this.$widget.on('mouseleave', () => {
+                this.suppressTooltip = false;
+                this.hideTooltips();
             });
         }
 
         this.$widget.find('.sync-status-icon:not(.sync-status-in-progress)')
-            .on('click', () => syncService.syncNow());
+            .on('click', () => {
+                // A click triggers sync and immediately changes the icon.
+                // Hide the tooltip and don't show it again until the pointer
+                // leaves the button, otherwise it stays stuck on screen.
+                this.suppressTooltip = true;
+                this.hideTooltips();
+
+                syncService.syncNow();
+            });
 
         ws.subscribeToMessages(message => this.processMessage(message));
     }
 
+    scheduleTooltipHide() {
+        clearTimeout(this.tooltipHideTimeout);
+
+        this.tooltipHideTimeout = setTimeout(() => this.hideTooltips(), 3000);
+    }
+
+    hideTooltips() {
+        clearTimeout(this.tooltipHideTimeout);
+        this.tooltipHideTimeout = null;
+
+        this.$widget.find('.sync-status-icon').each((i, icon) => {
+            const tooltip = $(icon).data('bs.tooltip');
+
+            if (tooltip?.tip) {
+                tooltip.hide();
+            }
+        });
+    }
+
     showIcon(className) {
         if (!options.get('syncServerHost')) {
+            this.hideTooltips();
+            this.currentIconClass = null;
             this.toggleInt(false);
             return;
         }
 
         this.$widget.show();
+
+        if (this.currentIconClass === className) {
+            return;
+        }
+
+        // The tooltip is anchored to the icon which is about to be hidden.
+        // Bootstrap doesn't hide it automatically in that case.
+        this.hideTooltips();
+        this.currentIconClass = className;
+
         this.$widget.find('.sync-status-icon').hide();
         this.$widget.find(`.sync-status-${className}`).show();
     }
