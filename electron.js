@@ -69,8 +69,6 @@ if (initialDeepLink) {
     queueDeepLink(initialDeepLink);
 }
 
-appIconService.installLocalAppIcon();
-
 require('electron-dl')({ saveAs: true });
 
 // needed for excalidraw export https://github.com/zadam/trilium/issues/4271
@@ -87,6 +85,10 @@ app.on('window-all-closed', () => {
 
 app.on('ready', async () => {
 //    app.setAppUserModelId('com.github.zadam.trilium');
+
+    // Install the desktop entry first: it is what declares (and is indexed as)
+    // the trilium:// handler, so it has to exist before registration below.
+    await appIconService.installLocalAppIcon();
 
     desktopProtocol.register(app);
 
