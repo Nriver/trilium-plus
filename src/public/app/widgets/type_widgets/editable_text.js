@@ -13,6 +13,18 @@ import fixCkeditorResizeLoops from "../../services/ckeditor_resize_fix.js";
 
 const ENABLE_INSPECTOR = false;
 
+// The CKEditor build's default config still lists "full" for backward compatibility, but current
+// CKEditor versions no longer define this style. Keeping it makes CKEditor log
+// "image-style-configuration-definition-invalid" on editor initialization, so override the list.
+const imageStyleOptions = [
+    'alignBlockLeft',
+    'alignCenter',
+    'alignBlockRight',
+    'alignLeft',
+    'alignRight',
+    'side'
+];
+
 const mentionSetup = {
     feeds: [
         {
@@ -173,6 +185,11 @@ export default class EditableTextTypeWidget extends AbstractTextTypeWidget {
         await this.watchdog.create(this.$editor[0], {
             placeholder: "Type the content of your note here ...",
             mention: mentionSetup,
+            image: {
+                styles: {
+                    options: imageStyleOptions
+                }
+            },
             codeBlock: {
                 languages: codeBlockLanguages
             },
