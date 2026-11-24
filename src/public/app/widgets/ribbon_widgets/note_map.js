@@ -9,6 +9,7 @@ const TPL = `
         }
         
         .note-map-ribbon-widget .note-map-container {
+            width: 100%;
             height: 300px;
         }
     
@@ -87,39 +88,53 @@ export default class NoteMapRibbonWidget extends NoteContextAwareWidget {
             this.noteMapWidget.setDimensions();
         });
 
-        const handleResize = () => {
-            if (!this.noteMapWidget.graph) { // no graph has been even rendered
-                return;
-            }
+        // Do not observe this widget itself: it is content-sized, so sizing its
+        // child inside a ResizeObserver callback would resize the observed
+        // element and trigger a "ResizeObserver loop" error. The height only
+        // depends on the viewport, so a window resize listener is sufficient.
+        this.handleWindowResize = () => this.handleResize();
+        window.addEventListener('resize', this.handleWindowResize);
+    }
 
-            if (this.openState === 'full') {
-                this.setFullHeight();
-            }
-            else if (this.openState === 'small') {
-                this.setSmallSize();
-            }
+    async noteSwitched() {
+        await super.noteSwitched();
+
+        // The full height depends on the widget's position, which can change
+        // while the ribbon tab is hidden (e.g. after switching notes).
+        if (this.openState === 'full') {
+            this.setFullHeight();
+        }
+    }
+
+    handleResize() {
+        if (!this.noteMapWidget.graph // no graph has been even rendered
+            || !this.isVisible()) {
+            return;
         }
 
-        new ResizeObserver(handleResize).observe(this.$widget[0]);
+        if (this.openState === 'full') {
+            this.setFullHeight();
+        }
+        else if (this.openState === 'small') {
+            this.setSmallSize();
+        }
     }
 
     setSmallSize() {
         const SMALL_SIZE_HEIGHT = 300;
-        const width = this.$widget.width();
 
-        this.$widget.find('.note-map-container')
-            .height(SMALL_SIZE_HEIGHT)
-            .width(width);
+        this.$container.height(SMALL_SIZE_HEIGHT);
     }
 
     setFullHeight() {
         const {top} = this.$widget[0].getBoundingClientRect();
 
         const height = $(window).height() - top;
-        const width = this.$widget.width();
 
-        this.$widget.find('.note-map-container')
-            .height(height)
-            .width(width);
+        this.$container.height(height);
+    }
+
+    cleanup() {
+        window.removeEventListener('resize', this.handleWindowResize);
     }
 }

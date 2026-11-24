@@ -1,6 +1,10 @@
 import NoteContextAwareWidget from "./note_context_aware_widget.js";
 
-const TPL = `<div class="scroll-padding-widget"></div>`;
+// The padding is half of the scrolling container's height. Using a percentage
+// avoids observing the scrolling container: writing the padding height can make
+// a vertical scrollbar appear, which changes the container's content-box width
+// and would immediately retrigger the observer ("ResizeObserver loop" error).
+const TPL = `<div class="scroll-padding-widget" style="height: 50%;"></div>`;
 
 export default class ScrollPaddingWidget extends NoteContextAwareWidget {
     isEnabled() {
@@ -13,19 +17,5 @@ export default class ScrollPaddingWidget extends NoteContextAwareWidget {
 
         this.$widget.on("click", () =>
             this.triggerCommand('scrollToEnd', {ntxId: this.ntxId}));
-    }
-
-    initialRenderCompleteEvent() {
-        this.$scrollingContainer = this.$widget.closest(".scrolling-container");
-
-        new ResizeObserver(() => this.refreshHeight()).observe(this.$scrollingContainer[0]);
-
-        this.refreshHeight();
-    }
-
-    refreshHeight() {
-        const containerHeight = this.$scrollingContainer.height();
-
-        this.$widget.css("height", Math.round(containerHeight / 2));
     }
 }

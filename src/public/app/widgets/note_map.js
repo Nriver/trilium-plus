@@ -9,7 +9,11 @@ import utils from "../services/utils.js";
 
 const esc = utils.escapeHtml;
 
-const TPL = `<div class="note-map-widget" style="position: relative;">
+// The graph container has a definite size supplied by its parent. This is
+// important because the container is observed by a ResizeObserver: if its size
+// were derived from the graph canvas, resizing the canvas would resize the
+// observed element and produce a "ResizeObserver loop" error.
+const TPL = `<div class="note-map-widget" style="position: relative; width: 100%; height: 100%;">
     <style>
         .note-detail-note-map {
             height: 100%;
@@ -36,7 +40,7 @@ const TPL = `<div class="note-map-widget" style="position: relative;">
 
     <div class="style-resolver"></div>
 
-    <div class="note-map-container"></div>
+    <div class="note-map-container" style="width: 100%; height: 100%;"></div>
 </div>`;
 
 export default class NoteMapWidget extends NoteContextAwareWidget {
@@ -71,11 +75,9 @@ export default class NoteMapWidget extends NoteContextAwareWidget {
             return;
         }
 
-        const $parent = this.$widget.parent();
-
         this.graph
-            .height($parent.height())
-            .width($parent.width());
+            .height(this.$container.height())
+            .width(this.$container.width());
     }
 
     async refreshWithNote(note) {
