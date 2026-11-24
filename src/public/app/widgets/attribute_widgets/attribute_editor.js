@@ -9,6 +9,7 @@ import attributeRenderer from "../../services/attribute_renderer.js";
 import noteCreateService from "../../services/note_create.js";
 import attributeService from "../../services/attributes.js";
 import linkService from "../../services/link.js";
+import fixCkeditorResizeLoops from "../../services/ckeditor_resize_fix.js";
 
 const HELP_TEXT = `
 <p>To add label, just type e.g. <code>#rock</code> or if you want to add also value then e.g. <code>#year = 2020</code></p> 
@@ -348,6 +349,10 @@ export default class AttributeEditorWidget extends NoteContextAwareWidget {
 
         /** @property {BalloonEditor} */
         this.textEditor = await BalloonEditor.create(this.$editor[0], editorConfig);
+
+        fixCkeditorResizeLoops(this.textEditor);
+        this.textEditor.once('ready', () => fixCkeditorResizeLoops(this.textEditor));
+
         this.textEditor.model.document.on('change:data', () => this.dataChanged());
         this.textEditor.editing.view.document.on('enter', (event, data) => {
             // disable entering new line - see https://github.com/ckeditor/ckeditor5/issues/9422
