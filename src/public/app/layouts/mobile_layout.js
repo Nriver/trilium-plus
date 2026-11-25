@@ -7,6 +7,7 @@ import CloseDetailButtonWidget from "../widgets/mobile_widgets/close_detail_butt
 import MobileDetailMenuWidget from "../widgets/mobile_widgets/mobile_detail_menu.js";
 import ScreenContainer from "../widgets/mobile_widgets/screen_container.js";
 import ScrollingContainer from "../widgets/containers/scrolling_container.js";
+import MarkdownImportDialog from "../widgets/dialogs/markdown_import.js";
 import ProtectedSessionPasswordDialog from "../widgets/dialogs/protected_session_password.js";
 import DeleteNotesDialog from "../widgets/dialogs/delete_notes.js";
 import ConfirmDialog from "../widgets/dialogs/confirm.js";
@@ -174,6 +175,7 @@ export default class MobileLayout {
                             .child(new FilePropertiesWidget().css('font-size','smaller'))
                     )
                 )
+                .child(new MarkdownImportDialog())
                 .child(new ProtectedSessionPasswordDialog())
                 .child(new DeleteNotesDialog())
                 .child(new ConfirmDialog())
