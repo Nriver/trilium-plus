@@ -583,7 +583,7 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
                     // Load all lazy/unloaded child nodes
                     // (which will trigger `loadChildren` recursively)
                     if (subNode.isUndefined() && subNode.isExpanded()) {
-                        subNode.load();
+                        subNode.load().catch(e => logError(`Note tree lazy load failed for noteId=${subNode.data?.noteId}: ${e?.message || e}`));
                     }
                 });
             },
@@ -831,7 +831,9 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
             .forEach(branch => branch.isExpanded = !!isExpanded);
 
         await this.batchUpdate(async () => {
-            await node.load(true);
+            if (!await this.#loadNodeChildren(node, true)) {
+                return;
+            }
 
             if (node.data.noteId !== hoistedNoteService.getHoistedNoteId()) { // hoisted note should always be expanded
                 await node.setExpanded(isExpanded, {noEvents: true, noAnimation: true});
@@ -896,6 +898,56 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
         this.tree.setFocus(true);
     }
 
+    /**
+     * Loads children of a lazy node and tolerates failures caused by the node being
+     * detached while the response was in flight ("Lazy parent node was removed while
+     * loading: discarding response."). Such a rejected load must not break navigation.
+     *
+     * @returns {Promise<boolean>} true if the node has been loaded (or reloaded)
+     */
+    async #loadNodeChildren(node, forceReload = false) {
+        try {
+            await node.load(forceReload);
+            return true;
+        }
+        catch (e) {
+            logError(`Note tree lazy load failed for noteId=${node.data?.noteId}, branchId=${node.data?.branchId}: ${e?.message || e}`);
+
+            if (!node.parent) {
+                // the node was removed from the tree while loading - there is no
+                // point in retrying on this detached instance
+                return false;
+            }
+
+            try {
+                await froca.reloadNotes([node.data.noteId]);
+            }
+            catch (reloadError) {
+                logError(`Note tree reload failed for noteId=${node.data?.noteId}: ${reloadError?.message || reloadError}`);
+            }
+
+            const wasExpanded = node.isExpanded();
+
+            try {
+                node.resetLazy();
+                await node.load(true);
+
+                if (wasExpanded) {
+                    try {
+                        await node.setExpanded(true, {noEvents: true, noAnimation: true});
+                    }
+                    catch (_) {}
+                }
+
+                return true;
+            }
+            catch (retryError) {
+                logError(`Note tree lazy load retry failed for noteId=${node.data?.noteId}: ${retryError?.message || retryError}`);
+                return false;
+            }
+        }
+    }
+
     /** @returns {FancytreeNode} */
     async getNodeFromPath(notePath, expand = false, logErrors = true) {
         utils.assertArguments(notePath);
@@ -918,7 +970,9 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
             // we expand only after hoisted note since before then nodes are not actually present in the tree
             if (parentNode) {
                 if (!parentNode.isLoaded()) {
-                    await parentNode.load();
+                    if (!await this.#loadNodeChildren(parentNode)) {
+                        return;
+                    }
                 }
 
                 if (expand) {
@@ -932,12 +986,20 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
                     branch.isExpanded = true;
                 }
 
-                await this.updateNode(parentNode);
+                try {
+                    await this.updateNode(parentNode);
+                }
+                catch (e) {
+                    logError(`Note tree node update failed for noteId=${parentNode.data?.noteId}: ${e?.message || e}`);
+                    return;
+                }
 
                 let foundChildNode = this.findChildNode(parentNode, childNoteId);
 
                 if (!foundChildNode) { // note might be recently created, so we'll force reload and try again
-                    await parentNode.load(true);
+                    if (!await this.#loadNodeChildren(parentNode, true)) {
+                        return;
+                    }
 
                     foundChildNode = this.findChildNode(parentNode, childNoteId);
 
@@ -995,6 +1057,18 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
     }
 
     async refresh() {
+        try {
+            await this.#refreshTree();
+        }
+        catch (e) {
+            // Note tree refresh is a UI synchronization step. It must not break the
+            // global noteSwitched event chain (which would make setNote() reject and
+            // e.g. plugins report that the note could not be opened).
+            logError(`Note tree refresh failed: ${e?.message || e}`);
+        }
+    }
+
+    async #refreshTree() {
         this.toggleInt(this.isEnabled());
         this.$treeSettingsPopup.hide();
 
@@ -1032,7 +1106,7 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
     async refreshSearch(e) {
         const activeNode = $.ui.fancytree.getNode(e);
 
-        activeNode.load(true);
+        activeNode.load(true).catch(e => logError(`Note tree search refresh failed for noteId=${activeNode.data?.noteId}: ${e?.message || e}`));
         activeNode.setExpanded(true, {noAnimation: true});
 
         toastService.showMessage("Saved search note refreshed.");
@@ -1241,7 +1315,7 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
         await this.batchUpdate(async () => {
             for (const noteId of refreshCtx.noteIdsToReload) {
                 for (const node of this.getNodesByNoteId(noteId)) {
-                    await node.load(true);
+                    await this.#loadNodeChildren(node, true);
 
                     refreshCtx.noteIdsToUpdate.add(noteId);
                 }
@@ -1365,6 +1439,15 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
     }
 
     async filterHoistedBranch(forceUpdate = false) {
+        try {
+            await this.#filterHoistedBranch(forceUpdate);
+        }
+        catch (e) {
+            logError(`Note tree hoist filter failed: ${e?.message || e}`);
+        }
+    }
+
+    async #filterHoistedBranch(forceUpdate = false) {
         if (!this.noteContext) {
             return;
         }
