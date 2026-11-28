@@ -2785,8 +2785,8 @@ packages:
     resolution: {integrity: sha512-dz4HxH6pOvbUzZpZ/yXhafjbR2I8cenK5xL0KtBFb7U2ADsR+OwXifnxZjij/pZWF775uSCMzWVd+jDik2H2IA==}
     engines: {node: '>= 12'}
 
-  follow-redirects@1.16.1:
-    resolution: {integrity: sha512-FNvFGzoMLWmE6Yj9spb/zjd7yiNCHiAW9/Tg9CXrQ8wuu32HtlJOwWO11OJafl5FfY3DxTdQ0vj42zU1kvv5jg==}
+  follow-redirects@1.16.3:
+    resolution: {integrity: sha512-toOSoqN6d51Wjf1aOFJYcoVv1aND9rj/CwjLU0Vz40oDuSpWDayCeKe4JpL5NL0WdFvoOOCI3BRo69HahjbR1A==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -5563,7 +5563,7 @@ snapshots:
       env-paths: 3.0.0
       graceful-fs: 4.2.11
       progress: 2.0.3
-      semver: 7.7.3
+      semver: 7.8.5
       sumchecker: 3.0.1(supports-color@5.5.0)
     optionalDependencies:
       undici: 7.30.1
@@ -6864,7 +6864,7 @@ snapshots:
 
   axios@1.20.0(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0):
     dependencies:
-      follow-redirects: 1.16.1(debug@4.4.3(supports-color@5.5.0))
+      follow-redirects: 1.16.3(debug@4.4.3(supports-color@5.5.0))
       form-data: 4.0.6
       https-proxy-agent: 5.0.1(supports-color@5.5.0)
       proxy-from-env: 2.1.0
@@ -7097,7 +7097,7 @@ snapshots:
 
   centra@2.7.0(debug@4.4.3(supports-color@5.5.0)):
     dependencies:
-      follow-redirects: 1.16.1(debug@4.4.3(supports-color@5.5.0))
+      follow-redirects: 1.16.3(debug@4.4.3(supports-color@5.5.0))
     transitivePeerDependencies:
       - debug
 
@@ -8408,7 +8408,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  follow-redirects@1.16.1(debug@4.4.3(supports-color@5.5.0)):
+  follow-redirects@1.16.3(debug@4.4.3(supports-color@5.5.0)):
     optionalDependencies:
       debug: 4.4.3(supports-color@5.5.0)
 
